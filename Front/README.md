@@ -6,9 +6,12 @@
   ## Installing pnpm
 
   Run `npm install -g pnpm` 
+
   ## Running the code
 
   Run `pnpm i` to install the dependencies.
+
+  Run `pnpm add react-router-dom` to install the dependencies.
 
   Run `pnpm add -D @types/react @types/react-dom` to install the dependencies.
 

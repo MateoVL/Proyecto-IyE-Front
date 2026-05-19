@@ -16,7 +16,7 @@ interface NavbarProps {
 
 export function Navbar({ isAuthenticated, user, onLogin, onLogout }: NavbarProps) {
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-[1400px] mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo and Title */}

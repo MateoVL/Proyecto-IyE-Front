@@ -282,13 +282,6 @@ export function NurseDashboard() {
         <NotificationBell onNotificationClick={handleNotificationClick} />
       </div>
 
-      {/* Agendar Cita Modal */}
-      <ScheduleAppointment
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        patientName={selectedPatient.name}
-        patientCondition={selectedPatient.condition}
-      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">

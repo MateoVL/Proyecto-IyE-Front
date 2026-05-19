@@ -4,7 +4,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gradient-to-r from-gray-800 to-gray-900 text-white mt-auto">
+    <footer className="relative z-50 bg-gradient-to-r from-gray-800 to-gray-900 text-white mt-auto">
       <div className="max-w-[1800px] mx-auto px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About Section */}

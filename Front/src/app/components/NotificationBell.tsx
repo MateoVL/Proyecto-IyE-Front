@@ -1,5 +1,6 @@
 import { Bell, X, AlertTriangle } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Notification {
   id: number;
@@ -10,9 +11,6 @@ interface Notification {
   read: boolean;
 }
 
-interface NotificationBellProps {
-  onNotificationClick: (patientName: string, condition: string) => void;
-}
 
 const initialNotifications: Notification[] = [
   {
@@ -49,10 +47,11 @@ const initialNotifications: Notification[] = [
   }
 ];
 
-export function NotificationBell({ onNotificationClick }: NotificationBellProps) {
+export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -73,14 +72,28 @@ export function NotificationBell({ onNotificationClick }: NotificationBellProps)
   }, [isOpen]);
 
   const handleNotificationClick = (notification: Notification) => {
-    setNotifications(prev =>
-      prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
-    );
+  setNotifications(prev =>
+    prev.map(n =>
+      n.id === notification.id
+        ? { ...n, read: true }
+        : n
+    )
+  );
 
-    const condition = notification.status === 'critical' ? 'EPOC - Estado Crítico' : 'Hipertensión - Estado Alto';
-    onNotificationClick(notification.patientName, condition);
-    setIsOpen(false);
-  };
+  const condition =
+    notification.status === 'critical'
+      ? 'EPOC - Estado Crítico'
+      : 'Hipertensión - Estado Alto';
+
+  navigate('/schedule', {
+    state: {
+      patientName: notification.patientName,
+      patientCondition: condition
+    }
+  });
+
+  setIsOpen(false);
+};
 
   const markAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
