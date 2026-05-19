@@ -1,7 +1,7 @@
 import { Calendar, Clock, AlertTriangle, Activity, Phone, MapPin, FileText } from 'lucide-react';
 import { useState } from 'react';
 import { NotificationBell } from './NotificationBell';
-//import { AgendarCita } from './AgendarCita';
+import { ScheduleAppointment } from './ScheduleAppointment';
 
 // Mock data for nurse dashboard
 const patientsWithAlerts = [
@@ -283,7 +283,7 @@ export function NurseDashboard() {
       </div>
 
       {/* Agendar Cita Modal */}
-      <AgendarCita
+      <ScheduleAppointment
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         patientName={selectedPatient.name}
