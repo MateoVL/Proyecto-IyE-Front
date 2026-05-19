@@ -3,6 +3,9 @@
 
   This is a code bundle for Dashboard para director médico. The original project is available at https://www.figma.com/design/nJcV0uaJ7V3HxTX9kt4nKy/Dashboard-para-director-m%C3%A9dico.
 
+  ## Installing pnpm
+
+  Run `npm install -g pnpm` 
   ## Running the code
 
   Run `pnpm i` to install the dependencies.

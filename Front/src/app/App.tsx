@@ -1,7 +1,7 @@
 import { User, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { Navbar } from './components/Navbar';
-//import { NurseDashboard } from './components/NurseDashboard';
+import { NurseDashboard } from './components/NurseDashboard';
 import { DirectorDashboard } from './components/DirectorDashboard';
 
 export default function App() {
@@ -95,13 +95,10 @@ export default function App() {
             </div>
           </div>
 
-          { viewMode === 'director' ? (
-            <DirectorDashboard />
+          {viewMode === 'nurse' ? (
+            <NurseDashboard />
           ) : (
-            // <NurseDashboard />
-            <div className="flex items-center justify-center min-h-[calc(100vh-88px)]">
-              <h2 className="text-2xl text-gray-700">Dashboard de Enfermería en construcción...</h2>
-            </div>
+             <DirectorDashboard />
           )}
         </>
       ) : (
