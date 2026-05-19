@@ -2,7 +2,7 @@ import { User, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { Navbar } from './components/Navbar';
 //import { NurseDashboard } from './components/NurseDashboard';
-//import { DirectorDashboard } from './components/DirectorDashboard';
+import { DirectorDashboard } from './components/DirectorDashboard';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -95,7 +95,14 @@ export default function App() {
             </div>
           </div>
 
-          
+          { viewMode === 'director' ? (
+            <DirectorDashboard />
+          ) : (
+            // <NurseDashboard />
+            <div className="flex items-center justify-center min-h-[calc(100vh-88px)]">
+              <h2 className="text-2xl text-gray-700">Dashboard de Enfermería en construcción...</h2>
+            </div>
+          )}
         </>
       ) : (
         /* Login Screen */
