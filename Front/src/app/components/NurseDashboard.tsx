@@ -1,4 +1,7 @@
 import { Calendar, Clock, AlertTriangle, Activity, Phone, MapPin, FileText } from 'lucide-react';
+import { useState } from 'react';
+import { NotificationBell } from './NotificationBell';
+//import { AgendarCita } from './AgendarCita';
 
 // Mock data for nurse dashboard
 const patientsWithAlerts = [
@@ -176,6 +179,14 @@ const upcomingAppointments = [
 ];
 
 export function NurseDashboard() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState({ name: '', condition: '' });
+
+  const handleNotificationClick = (patientName: string, condition: string) => {
+    setSelectedPatient({ name: patientName, condition });
+    setIsModalOpen(true);
+  };
+
   const getAlertColor = (level: string) => {
     switch (level) {
       case 'critical':
@@ -263,10 +274,21 @@ export function NurseDashboard() {
   return (
     <div className="max-w-[1400px] mx-auto p-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl mb-2">Dashboard de Enfermería</h1>
-        <p className="text-gray-600">Monitoreo y Seguimiento de Pacientes</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl mb-2">Dashboard de Enfermería</h1>
+          <p className="text-gray-600">Monitoreo y Seguimiento de Pacientes</p>
+        </div>
+        <NotificationBell onNotificationClick={handleNotificationClick} />
       </div>
+
+      {/* Agendar Cita Modal */}
+      <AgendarCita
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        patientName={selectedPatient.name}
+        patientCondition={selectedPatient.condition}
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
