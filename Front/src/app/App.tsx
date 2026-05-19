@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { NurseDashboard } from './components/NurseDashboard';
 import { DirectorDashboard } from './components/DirectorDashboard';
+import { Footer } from './components/Footer';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -150,6 +151,7 @@ export default function App() {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 }
