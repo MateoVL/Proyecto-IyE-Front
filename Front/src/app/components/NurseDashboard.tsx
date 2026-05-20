@@ -1,105 +1,198 @@
-import { Calendar, Clock, AlertTriangle, Activity, Phone, MapPin, FileText } from 'lucide-react';
+import { Search, Users, UserPlus, Filter, Calendar, Clock, MapPin, FileText, Activity } from 'lucide-react';
 import { useState } from 'react';
-import { NotificationBell } from './NotificationBell';
-import { ScheduleAppointment } from './ScheduleAppointment';
+import { PatientRecord } from './PatientRecord';
 
-// Mock data for nurse dashboard
-const patientsWithAlerts = [
+interface Patient {
+  id: number;
+  name: string;
+  age: number;
+  conditions: string[];
+  email: string;
+  phone: string;
+  address: string;
+  bloodType: string;
+  allergies: string;
+  medications: string;
+  lastVisit: string;
+  nextVisit: string;
+  status: string;
+  emergencyContact: string;
+  emergencyPhone: string;
+  alertPattern?: string;
+  lastMeasurement?: string;
+}
+
+interface Appointment {
+  id: number;
+  patient: string;
+  date: string;
+  time: string;
+  type: string;
+  doctor: string;
+  room: string;
+  priority: string;
+}
+
+const mockPatients: Patient[] = [
   {
     id: 1,
-    name: 'Ana Rodríguez',
-    age: 65,
-    condition: 'EPOC',
-    alertLevel: 'critical',
-    pattern: 'Saturación O2 < 90% últimas 48h',
-    lastMeasurement: '88% O2',
-    room: '203',
-    phone: '555-0101'
+    name: 'María García López',
+    age: 68,
+    conditions: ['Diabetes Tipo 2', 'Hipertensión'],
+    email: 'maria.garcia@email.com',
+    phone: '555-0101',
+    address: 'Av. Principal 123, Santiago',
+    bloodType: 'O+',
+    allergies: 'Penicilina',
+    medications: 'Metformina 850mg (2 veces al día), Enalapril 10mg',
+    lastVisit: '2026-05-15',
+    nextVisit: '2026-05-22',
+    status: 'controlled',
+    emergencyContact: 'Pedro García',
+    emergencyPhone: '555-0102',
+    alertPattern: 'Valores estables en rango objetivo',
+    lastMeasurement: '120 mg/dl'
   },
   {
     id: 2,
     name: 'Juan Pérez Martín',
     age: 72,
-    condition: 'Hipertensión',
-    alertLevel: 'high',
-    pattern: 'Presión arterial elevada (3 días consecutivos)',
-    lastMeasurement: '165/95 mmHg',
-    room: '105',
-    phone: '555-0102'
+    conditions: ['Hipertensión'],
+    email: 'juan.perez@email.com',
+    phone: '555-0103',
+    address: 'Calle Los Pinos 456, Providencia',
+    bloodType: 'A+',
+    allergies: 'Ninguna conocida',
+    medications: 'Losartán 50mg, Aspirina 100mg',
+    lastVisit: '2026-05-10',
+    nextVisit: '2026-05-20',
+    status: 'warning',
+    emergencyContact: 'Carmen Pérez',
+    emergencyPhone: '555-0104',
+    alertPattern: 'Presión arterial elevada (3 días consecutivos)',
+    lastMeasurement: '165/95 mmHg'
   },
   {
     id: 3,
-    name: 'María García López',
-    age: 68,
-    condition: 'Diabetes Tipo 2',
-    alertLevel: 'high',
-    pattern: 'Glucosa > 250 mg/dl (tendencia ascendente)',
-    lastMeasurement: '280 mg/dl',
-    room: '310',
-    phone: '555-0103'
+    name: 'Ana Rodríguez',
+    age: 65,
+    conditions: ['EPOC'],
+    email: 'ana.rodriguez@email.com',
+    phone: '555-0105',
+    address: 'Pasaje Las Flores 789, Las Condes',
+    bloodType: 'B-',
+    allergies: 'Sulfamidas',
+    medications: 'Salbutamol inhalador, Prednisona 5mg',
+    lastVisit: '2026-05-18',
+    nextVisit: '2026-05-21',
+    status: 'critical',
+    emergencyContact: 'Roberto Rodríguez',
+    emergencyPhone: '555-0106',
+    alertPattern: 'Saturación O2 < 90% últimas 48h',
+    lastMeasurement: '88% O2'
   },
   {
     id: 4,
     name: 'Carlos Sánchez',
     age: 75,
-    condition: 'Insuficiencia Cardíaca',
-    alertLevel: 'medium',
-    pattern: 'Aumento de peso +3kg en 2 días',
-    lastMeasurement: '78 kg',
-    room: '208',
-    phone: '555-0104'
+    conditions: ['Insuficiencia Cardíaca', 'Hipertensión'],
+    email: 'carlos.sanchez@email.com',
+    phone: '555-0107',
+    address: 'Av. Libertador 321, Ñuñoa',
+    bloodType: 'AB+',
+    allergies: 'Ninguna conocida',
+    medications: 'Furosemida 40mg, Carvedilol 25mg, Enalapril 20mg',
+    lastVisit: '2026-05-16',
+    nextVisit: '2026-05-23',
+    status: 'controlled',
+    emergencyContact: 'Isabel Sánchez',
+    emergencyPhone: '555-0108',
+    alertPattern: 'Control estable, peso dentro del rango',
+    lastMeasurement: '75 kg'
   },
   {
     id: 5,
     name: 'Laura Fernández',
     age: 58,
-    condition: 'Diabetes Tipo 1',
-    alertLevel: 'medium',
-    pattern: 'Sin registro de glucosa en 24h',
-    lastMeasurement: 'N/A',
-    room: '402',
-    phone: '555-0105'
+    conditions: ['Diabetes Tipo 1'],
+    email: 'laura.fernandez@email.com',
+    phone: '555-0109',
+    address: 'Calle Nueva 654, Vitacura',
+    bloodType: 'O-',
+    allergies: 'Látex',
+    medications: 'Insulina glargina, Insulina rápida, Metformina',
+    lastVisit: '2026-05-17',
+    nextVisit: '2026-05-24',
+    status: 'controlled',
+    emergencyContact: 'Diego Fernández',
+    emergencyPhone: '555-0110',
+    alertPattern: 'Buen control metabólico',
+    lastMeasurement: '110 mg/dl'
   },
   {
     id: 6,
     name: 'Pedro Gómez',
     age: 70,
-    condition: 'Hipertensión',
-    alertLevel: 'low',
-    pattern: 'Control estable',
-    lastMeasurement: '130/80 mmHg',
-    room: '156',
-    phone: '555-0106'
+    conditions: ['Hipertensión', 'Diabetes Tipo 2'],
+    email: 'pedro.gomez@email.com',
+    phone: '555-0111',
+    address: 'Av. Grecia 987, La Reina',
+    bloodType: 'A-',
+    allergies: 'Yodo',
+    medications: 'Amlodipino 10mg, Hidroclorotiazida 25mg',
+    lastVisit: '2026-05-14',
+    nextVisit: '2026-05-21',
+    status: 'warning',
+    emergencyContact: 'María Gómez',
+    emergencyPhone: '555-0112',
+    alertPattern: 'Valores ligeramente elevados',
+    lastMeasurement: '140/85 mmHg'
   },
   {
     id: 7,
     name: 'Isabel Torres',
     age: 63,
-    condition: 'Diabetes Tipo 2',
-    alertLevel: 'low',
-    pattern: 'Valores dentro del rango',
-    lastMeasurement: '110 mg/dl',
-    room: '301',
-    phone: '555-0107'
+    conditions: ['Diabetes Tipo 2'],
+    email: 'isabel.torres@email.com',
+    phone: '555-0113',
+    address: 'Paseo Central 147, Maipú',
+    bloodType: 'B+',
+    allergies: 'Ninguna conocida',
+    medications: 'Metformina 1000mg, Glibenclamida 5mg',
+    lastVisit: '2026-05-12',
+    nextVisit: '2026-05-25',
+    status: 'controlled',
+    emergencyContact: 'José Torres',
+    emergencyPhone: '555-0114',
+    alertPattern: 'Valores dentro del rango',
+    lastMeasurement: '110 mg/dl'
   },
   {
     id: 8,
     name: 'Francisco Ruiz',
     age: 69,
-    condition: 'Arritmia',
-    alertLevel: 'high',
-    pattern: 'Frecuencia cardíaca irregular últimas 6h',
-    lastMeasurement: '105 bpm irregular',
-    room: '215',
-    phone: '555-0108'
-  },
+    conditions: ['Arritmia', 'Hipertensión'],
+    email: 'francisco.ruiz@email.com',
+    phone: '555-0115',
+    address: 'Calle Andes 258, Peñalolén',
+    bloodType: 'O+',
+    allergies: 'AINEs',
+    medications: 'Amiodarona 200mg, Warfarina 5mg',
+    lastVisit: '2026-05-13',
+    nextVisit: '2026-05-19',
+    status: 'warning',
+    emergencyContact: 'Teresa Ruiz',
+    emergencyPhone: '555-0116',
+    alertPattern: 'Frecuencia cardíaca irregular últimas 6h',
+    lastMeasurement: '105 bpm irregular'
+  }
 ];
 
-const upcomingAppointments = [
+const upcomingAppointments: Appointment[] = [
   {
     id: 1,
     patient: 'Ana Rodríguez',
-    date: '2026-05-19',
+    date: '2026-05-21',
     time: '10:30',
     type: 'Control Respiratorio',
     doctor: 'Dr. Martínez',
@@ -175,60 +268,43 @@ const upcomingAppointments = [
     doctor: 'Dra. Hernández',
     room: '301',
     priority: 'low'
-  },
+  }
 ];
 
 export function NurseDashboard() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState({ name: '', condition: '' });
+  const [patients] = useState<Patient[]>(mockPatients);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [isRecordOpen, setIsRecordOpen] = useState(false);
 
-  const handleNotificationClick = (patientName: string, condition: string) => {
-    setSelectedPatient({ name: patientName, condition });
-    setIsModalOpen(true);
+  const filteredPatients = patients.filter(patient => {
+    const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         patient.conditions.some(c => c.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = filterStatus === 'all' || patient.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  const handlePatientClick = (patient: Patient) => {
+    setSelectedPatient(patient);
+    setIsRecordOpen(true);
   };
 
-  const getAlertColor = (level: string) => {
-    switch (level) {
-      case 'critical':
-        return 'bg-red-50 border-l-4 border-red-500';
-      case 'high':
-        return 'bg-orange-50 border-l-4 border-orange-500';
-      case 'medium':
-        return 'bg-yellow-50 border-l-4 border-yellow-500';
-      case 'low':
-        return 'bg-green-50 border-l-4 border-green-500';
-      default:
-        return 'bg-gray-50 border-l-4 border-gray-500';
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'controlled': return 'bg-green-100 text-green-800';
+      case 'warning': return 'bg-yellow-100 text-yellow-800';
+      case 'critical': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getAlertBadgeColor = (level: string) => {
-    switch (level) {
-      case 'critical':
-        return 'bg-red-500 text-white';
-      case 'high':
-        return 'bg-orange-500 text-white';
-      case 'medium':
-        return 'bg-yellow-500 text-white';
-      case 'low':
-        return 'bg-green-500 text-white';
-      default:
-        return 'bg-gray-500 text-white';
-    }
-  };
-
-  const getAlertLabel = (level: string) => {
-    switch (level) {
-      case 'critical':
-        return 'Crítico';
-      case 'high':
-        return 'Alto';
-      case 'medium':
-        return 'Medio';
-      case 'low':
-        return 'Estable';
-      default:
-        return 'Normal';
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'controlled': return 'Controlado';
+      case 'warning': return 'En Observación';
+      case 'critical': return 'Crítico';
+      default: return 'Normal';
     }
   };
 
@@ -247,8 +323,8 @@ export function NurseDashboard() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const today = new Date('2026-05-19');
-    const tomorrow = new Date('2026-05-20');
+    const today = new Date('2026-05-20');
+    const tomorrow = new Date('2026-05-21');
 
     if (date.toDateString() === today.toDateString()) {
       return 'Hoy';
@@ -259,122 +335,185 @@ export function NurseDashboard() {
     }
   };
 
-  // Sort patients by alert level
-  const sortedPatients = [...patientsWithAlerts].sort((a, b) => {
-    const order = { critical: 0, high: 1, medium: 2, low: 3 };
-    return order[a.alertLevel as keyof typeof order] - order[b.alertLevel as keyof typeof order];
-  });
-
-  // Calculate stats
-  const criticalCount = patientsWithAlerts.filter(p => p.alertLevel === 'critical').length;
-  const highCount = patientsWithAlerts.filter(p => p.alertLevel === 'high').length;
-  const mediumCount = patientsWithAlerts.filter(p => p.alertLevel === 'medium').length;
-  const stableCount = patientsWithAlerts.filter(p => p.alertLevel === 'low').length;
+  const stats = {
+    total: patients.length,
+    controlled: patients.filter(p => p.status === 'controlled').length,
+    warning: patients.filter(p => p.status === 'warning').length,
+    critical: patients.filter(p => p.status === 'critical').length
+  };
 
   return (
-    <div className="max-w-[1400px] mx-auto p-6">
+    <div className="max-w-[1800px] mx-auto p-6">
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl mb-2">Dashboard de Enfermería</h1>
-          <p className="text-gray-600">Monitoreo y Seguimiento de Pacientes</p>
-        </div>
-        <NotificationBell onNotificationClick={handleNotificationClick} />
+      <div className="mb-8">
+        <h1 className="text-3xl mb-2">Enfermería</h1>
+        <p className="text-gray-600">Monitoreo y seguimiento de pacientes crónicos</p>
       </div>
-
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-red-500 text-white rounded-lg shadow-sm p-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div
+          onClick={() => setFilterStatus('all')}
+          className={`bg-white rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${
+            filterStatus === 'all' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-red-100 text-sm mb-1">Críticos</p>
-              <p className="text-3xl">{criticalCount}</p>
+              <p className="text-gray-600 text-sm mb-1">Total Pacientes</p>
+              <p className="text-3xl">{stats.total}</p>
             </div>
-            <AlertTriangle className="w-8 h-8 text-red-200" />
+            <Users className="w-8 h-8 text-blue-500" />
           </div>
         </div>
-        <div className="bg-orange-500 text-white rounded-lg shadow-sm p-6">
+        <div
+          onClick={() => setFilterStatus('controlled')}
+          className={`bg-green-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${
+            filterStatus === 'controlled' ? 'border-green-500 ring-2 ring-green-200' : 'border-green-200'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-orange-100 text-sm mb-1">Alerta Alta</p>
-              <p className="text-3xl">{highCount}</p>
+              <p className="text-green-700 text-sm mb-1">Controlados</p>
+              <p className="text-3xl text-green-800">{stats.controlled}</p>
             </div>
-            <AlertTriangle className="w-8 h-8 text-orange-200" />
+            <Users className="w-8 h-8 text-green-500" />
           </div>
         </div>
-        <div className="bg-yellow-500 text-white rounded-lg shadow-sm p-6">
+        <div
+          onClick={() => setFilterStatus('warning')}
+          className={`bg-yellow-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${
+            filterStatus === 'warning' ? 'border-yellow-500 ring-2 ring-yellow-200' : 'border-yellow-200'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-yellow-100 text-sm mb-1">Alerta Media</p>
-              <p className="text-3xl">{mediumCount}</p>
+              <p className="text-yellow-700 text-sm mb-1">En Observación</p>
+              <p className="text-3xl text-yellow-800">{stats.warning}</p>
             </div>
-            <AlertTriangle className="w-8 h-8 text-yellow-200" />
+            <Users className="w-8 h-8 text-yellow-500" />
           </div>
         </div>
-        <div className="bg-green-500 text-white rounded-lg shadow-sm p-6">
+        <div
+          onClick={() => setFilterStatus('critical')}
+          className={`bg-red-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${
+            filterStatus === 'critical' ? 'border-red-500 ring-2 ring-red-200' : 'border-red-200'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-sm mb-1">Estables</p>
-              <p className="text-3xl">{stableCount}</p>
+              <p className="text-red-700 text-sm mb-1">Críticos</p>
+              <p className="text-3xl text-red-800">{stats.critical}</p>
             </div>
-            <Activity className="w-8 h-8 text-green-200" />
+            <Users className="w-8 h-8 text-red-500" />
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Patients List with Color-coded Alerts */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl">Pacientes por Nivel de Alerta</h2>
-              <p className="text-sm text-gray-600 mt-1">Ordenados por prioridad de atención</p>
+      {/* Filters and Search */}
+      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200 mb-8">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar por nombre o condición..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
-            <div className="max-h-[700px] overflow-y-auto">
-              {sortedPatients.map((patient) => (
-                <div
-                  key={patient.id}
-                  className={`p-4 border-b border-gray-100 ${getAlertColor(patient.alertLevel)} hover:opacity-90 transition-opacity`}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-medium text-lg">{patient.name}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getAlertBadgeColor(patient.alertLevel)}`}>
-                          {getAlertLabel(patient.alertLevel)}
+          </div>
+
+          {/* Filter */}
+          <div className="flex items-center gap-2">
+            <Filter className="w-5 h-5 text-gray-400" />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Todos los estados</option>
+              <option value="controlled">Controlados</option>
+              <option value="warning">En Observación</option>
+              <option value="critical">Críticos</option>
+            </select>
+          </div>
+
+          {/* Add Patient Button */}
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+            <UserPlus className="w-5 h-5" />
+            <span>Nuevo Paciente</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Patients Table - 2/3 */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nombre</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Edad</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Condición</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Estado</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Patrón/Alerta</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Próxima Visita</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredPatients.map((patient) => (
+                    <tr
+                      key={patient.id}
+                      onClick={() => handlePatientClick(patient)}
+                      className="hover:bg-gray-50 cursor-pointer transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <p className="font-medium text-blue-600 hover:text-blue-700">{patient.name}</p>
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">{patient.age} años</td>
+                      <td className="px-6 py-4 text-gray-700">{patient.conditions.join(', ')}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(patient.status)}`}>
+                          {getStatusLabel(patient.status)}
                         </span>
-                      </div>
-                      <p className="text-sm text-gray-600">{patient.age} años - {patient.condition}</p>
-                    </div>
-                  </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm">
+                          <p className="text-gray-600 mb-1">{patient.alertPattern}</p>
+                          {patient.lastMeasurement && (
+                            <div className="flex items-center gap-1 text-gray-500">
+                              <Activity className="w-3 h-3" />
+                              <span className="text-xs">{patient.lastMeasurement}</span>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {new Date(patient.nextVisit).toLocaleDateString('es-ES')}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-                  <div className="bg-white bg-opacity-50 rounded-lg p-3 mb-3">
-                    <p className="text-sm font-medium text-gray-700 mb-1">Patrón Detectado:</p>
-                    <p className="text-sm text-gray-600">{patient.pattern}</p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <div className="flex items-center gap-1 text-gray-700">
-                      <Activity className="w-4 h-4" />
-                      <span className="font-medium">{patient.lastMeasurement}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <MapPin className="w-4 h-4" />
-                      <span>Habitación {patient.room}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <Phone className="w-4 h-4" />
-                      <span>{patient.phone}</span>
-                    </div>
-                  </div>
+              {filteredPatients.length === 0 && (
+                <div className="text-center py-12 text-gray-500">
+                  <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p>No se encontraron pacientes</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
 
-        {/* Upcoming Appointments */}
+        {/* Upcoming Appointments - 1/3 */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="p-6 border-b border-gray-200">
@@ -426,6 +565,13 @@ export function NurseDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Patient Record Modal */}
+      <PatientRecord
+        isOpen={isRecordOpen}
+        onClose={() => setIsRecordOpen(false)}
+        patient={selectedPatient}
+      />
     </div>
   );
 }
