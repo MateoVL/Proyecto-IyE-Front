@@ -1,21 +1,22 @@
 import { AlertCircle, TrendingUp, Users, Activity, Bell, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { useState } from 'react';
-import directorService from '../services/director.service';
+import { useState, useEffect } from 'react';
+import directorService from '../../services/directorService';
+
 
 const initialMetricsData = [
-  { id: 1, title: 'Pacientes Crónicos', value: '0', icon: Users, color: 'bg-blue-500' },
-  { id: 2, title: 'Alertas Activas', value: '0', icon: AlertCircle, color: 'bg-red-500' },
-  { id: 3, title: 'Seguimientos Hoy', value: '0', icon: Activity, color: 'bg-green-500' },
-  { id: 4, title: 'Tasa de Control', value: '0%', icon: TrendingUp, color: 'bg-purple-500' },
+  { id: 1, title: 'Pacientes Crónicos', value: '0', icon: Users, color: 'bg-blue-500', live: true },
+  { id: 2, title: 'Alertas Activas', value: '0', icon: AlertCircle, color: 'bg-red-500', live: true },
+  { id: 3, title: 'Seguimientos Hoy', value: '0', icon: Activity, color: 'bg-green-500', live: true },
+  { id: 4, title: 'Tasa de Control', value: '0%', icon: TrendingUp, color: 'bg-purple-500', live: true },
 ];
-
+/*
 // Mock data
 const metricsData = [
-  { id: 1, title: 'Pacientes Crónicos', value: '248', change: '+12', icon: Users, color: 'bg-blue-500' },
-  { id: 2, title: 'Alertas Activas', value: '23', change: '+5', icon: AlertCircle, color: 'bg-red-500' },
-  { id: 3, title: 'Seguimientos Hoy', value: '45', change: '+8', icon: Activity, color: 'bg-green-500' },
-  { id: 4, title: 'Tasa de Control', value: '87%', change: '+3%', icon: TrendingUp, color: 'bg-purple-500' },
+  { id: 1, title: 'Pacientes Crónicos', value: '248', change: '+12', icon: Users, color: 'bg-blue-500', live: true },
+  { id: 2, title: 'Alertas Activas', value: '23', change: '+5', icon: AlertCircle, color: 'bg-red-500', live: true },
+  { id: 3, title: 'Seguimientos Hoy', value: '45', change: '+8', icon: Activity, color: 'bg-green-500', live: true },
+  { id: 4, title: 'Tasa de Control', value: '87%', change: '+3%', icon: TrendingUp, color: 'bg-purple-500', live: true },
 ];
 
 const chartData = [
@@ -50,19 +51,32 @@ type ChronicPatient = {
   name: string;
   age: number;
   condition: string;
-  status: 'controlled' | 'warning' | 'critical';
+  status: string;
   lastVisit: string;
   nextVisit: string;
+  room?: string;
+  phone?: string;
+};
+
+type HistoricEntry = {
+  mes: string;
+  controlados: number;
+  descompensados: number;
+  alertas: number;
 };
 
 export function DirectorDashboard() {
   // ── Estado local ────────────────────────────────────────────────────────────
   const [filterStatus,   setFilterStatus]   = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
-const [chartData, setChartData] = useState([]);
+
+
+  const [chartData, setChartData] = useState<HistoricEntry[]>([]);
   const [metricsData, setMetricsData] = useState(initialMetricsData);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [chronicPatients, setChronicPatients] = useState<ChronicPatient[]>([]);
+  const [loading,        setLoading]        = useState(true);
+  const [error,          setError]          = useState<string | null>(null);
 
   const init = async () => {
   try {
@@ -91,31 +105,32 @@ const [chartData, setChartData] = useState([]);
       directorService.getControlRate()
     ]);
 
+
     setMetricsData((prev) =>
       prev.map((metric) => {
         switch (metric.id) {
           case 1:
             return {
               ...metric,
-              value: chronicPatients.data.toString()
+              value: chronicPatients.data.quantity.toString()
             };
 
           case 2:
             return {
               ...metric,
-              value: activeAlerts.data.toString()
+              value: activeAlerts.data.quantity.toString()
             };
 
           case 3:
             return {
               ...metric,
-              value: todayFollowups.data.toString()
+              value: todayFollowups.data.quantity.toString()
             };
 
           case 4:
             return {
               ...metric,
-              value: `${controlRate.data*100}%`
+              value: `${Number(controlRate.data.controlRate) * 100}%`
             };
 
           default:
@@ -126,8 +141,14 @@ const [chartData, setChartData] = useState([]);
 
   } catch (error) {
     console.log("Error cargando dashboard", error);
-  }
+  }finally {
+  setLoading(false);
+}
 };
+
+useEffect(() => {
+  init();
+}, []);
   const filteredAlerts = alerts.filter(alert =>
     filterPriority === 'all' || alert.priority === filterPriority
   );
@@ -183,7 +204,7 @@ const [chartData, setChartData] = useState([]);
             </span>
           )}
           <button
-            onClick={fetchData}
+            onClick={init}
             disabled={loading}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors text-sm"
           >
@@ -207,7 +228,6 @@ const [chartData, setChartData] = useState([]);
                   {metric.live && (
                     <span className={`w-2 h-2 rounded-full ${loading ? 'bg-yellow-400' : error ? 'bg-red-400' : 'bg-green-400'}`} title={loading ? 'Cargando...' : error ? 'Error' : 'Datos en vivo'} />
                   )}
-                  <span className="text-sm text-green-600 font-medium">{metric.change}</span>
                 </div>
               </div>
               <h3 className="text-gray-600 text-sm mb-1">{metric.title}</h3>
