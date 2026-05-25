@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -9,121 +8,50 @@ import { LoginView } from './components/LoginView';
 import { DirectorDashboard } from './components/DirectorDashboard';
 import { NurseDashboard } from './components/NurseDashboard';
 import { ScheduleAppointment } from './components/ScheduleAppointment';
-
-type User = {
-  name: string;
-  role: string;
-  email: string;
-  avatar: string;
-};
+import { ProtectedRoute } from '../components/ProtectedRoute';
+import { useAuth } from '../context/AuthContext';
 
 export default function App() {
+  const { isAuthenticated, isLoading, user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navUser = user
+    ? {
+        name: user.name,
+        role: user.roles.includes('director') ? 'Director Médico' : 'Enfermera',
+        email: user.email,
+        avatar: user.avatar,
+      }
+    : { name: '', role: '', email: '', avatar: '' };
 
-  const [user, setUser] = useState<User>({
-    name: '',
-    role: '',
-    email: '',
-    avatar: '',
-  });
-
-  const handleLogin = (role?: 'director' | 'nurse') => {
-    setIsAuthenticated(true);
-
-    if (role === 'nurse') {
-      setUser({
-        name: 'Enf. Carmen Rodríguez',
-        role: 'Enfermera',
-        email: 'c.rodriguez@sanrafael.com',
-        avatar: 'CR',
-      });
-
-      navigate('/nurse');
-      return;
-    }
-
-    setUser({
-      name: 'Dr. Roberto Martínez',
-      role: 'Director Médico',
-      email: 'r.martinez@sanrafael.com',
-      avatar: 'RM',
-    });
-
-    navigate('/');
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-
-    setUser({
-      name: '',
-      role: '',
-      email: '',
-      avatar: '',
-    });
-
-    navigate('/');
-  };
-
-  const handleSelectRole = (role: 'director' | 'nurse') => {
-    if (role === 'director') {
-      setUser({
-        name: 'Dr. Roberto Martínez',
-        role: 'Director Médico',
-        email: 'r.martinez@sanrafael.com',
-        avatar: 'RM',
-      });
-
-      navigate('/director');
-    } else {
-      setUser({
-        name: 'Enf. Carmen Rodríguez',
-        role: 'Enfermera',
-        email: 'c.rodriguez@sanrafael.com',
-        avatar: 'CR',
-      });
-
-      navigate('/nurse');
-    }
-  };
-
-  const ProtectedRoute = ({
-    children,
-  }: {
-    children: React.ReactNode;
-  }) => {
-    if (!isAuthenticated) {
-      return <Navigate to="/login" replace />;
-    }
-
-    return <>{children}</>;
-  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-gray-500 animate-pulse">Iniciando sesión...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar
         isAuthenticated={isAuthenticated}
-        user={user}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
+        user={navUser}
+        onLogin={() => navigate('/login')}
+        onLogout={logout}
       />
 
       <main className="flex-1">
         <Routes>
           {/* Públicas */}
-          <Route
-            path="/login"
-            element={<LoginView onLogin={handleLogin} />}
-          />
+          <Route path="/login" element={<LoginView />} />
 
           {/* Protegidas */}
           <Route
             path="/"
             element={
               <ProtectedRoute>
-                <HomeView onSelectRole={handleSelectRole} />
+                <HomeView onSelectRole={() => {}} />
               </ProtectedRoute>
             }
           />
@@ -131,7 +59,7 @@ export default function App() {
           <Route
             path="/director"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute roles={['director']}>
                 <DirectorDashboard />
               </ProtectedRoute>
             }
@@ -140,7 +68,7 @@ export default function App() {
           <Route
             path="/nurse"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute roles={['nurse']}>
                 <NurseDashboard />
               </ProtectedRoute>
             }
@@ -155,15 +83,22 @@ export default function App() {
             }
           />
 
+          {/* Acceso denegado */}
+          <Route
+            path="/unauthorized"
+            element={
+              <div className="flex items-center justify-center min-h-screen">
+                <p className="text-red-500 text-xl">
+                  No tienes permisos para acceder a esta página.
+                </p>
+              </div>
+            }
+          />
+
           {/* Ruta no encontrada */}
           <Route
             path="*"
-            element={
-              <Navigate
-                to={isAuthenticated ? '/' : '/login'}
-                replace
-              />
-            }
+            element={<Navigate to={isAuthenticated ? '/' : '/login'} replace />}
           />
         </Routes>
       </main>
