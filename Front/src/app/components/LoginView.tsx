@@ -1,14 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Activity, LogIn, Eye, EyeOff, Shield, Heart, BarChart3, Lock } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
-interface LoginViewProps {
-  onLogin: (role: "director" | "nurse") => void;
-}
-
-const CREDENTIALS = {
-  director: { email: "r.martinez@sanrafael.com", password: "director123" },
-  nurse: { email: "c.rodriguez@sanrafael.com", password: "enfermeria123" },
-};
+// Props vacías: mantenemos la interfaz para no romper el sitio de uso en App.tsx
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface LoginViewProps {}
 
 const FEATURES = [
   { icon: Heart, label: "Seguimiento de pacientes crónicos en tiempo real" },
@@ -16,7 +13,10 @@ const FEATURES = [
   { icon: Shield, label: "Alertas inteligentes y gestión de riesgos" },
 ];
 
-export function LoginView({ onLogin }: LoginViewProps) {
+export function LoginView(_props: LoginViewProps) {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,32 +24,43 @@ export function LoginView({ onLogin }: LoginViewProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-      if (
-        email === CREDENTIALS.director.email &&
-        password === CREDENTIALS.director.password
-      ) {
-        onLogin("director");
-      } else if (
-        email === CREDENTIALS.nurse.email &&
-        password === CREDENTIALS.nurse.password
-      ) {
-        onLogin("nurse");
-      } else {
-        setError("Credenciales incorrectas. Verifica tu correo y contraseña.");
+    try {
+      await login(email, password);
+      // Leer roles directo del token guardado (evita stale state)
+      const raw = localStorage.getItem('iye_access_token');
+      const roles: string[] = [];
+      if (raw) {
+        try {
+          const p = JSON.parse(atob(raw.split('.')[1]));
+          const realm = (p?.realm_access as { roles?: string[] })?.roles ?? [];
+          const client = (p?.resource_access as Record<string, { roles?: string[] }>)
+            ?.['iye-frontend']?.roles ?? [];
+          roles.push(...realm, ...client);
+        } catch { /* ignore */ }
       }
-    }, 800);
+      const hasR = (r: string) => roles.some(x => x.toLowerCase() === r.toLowerCase());
+      if (hasR('director')) navigate('/director');
+      else if (hasR('nurse')) navigate('/nurse');
+      else navigate('/');
+    } catch {
+      setError("Credenciales incorrectas. Verifica tu usuario y contraseña.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Botones de demo — rellenan el formulario para agilizar pruebas
   const fillCredentials = (role: "director" | "nurse") => {
-    setEmail(CREDENTIALS[role].email);
-    setPassword(CREDENTIALS[role].password);
+    const DEMO: Record<"director" | "nurse", { email: string; password: string }> = {
+      director: { email: "r.martinez@sanrafael.com", password: "director123" },
+      nurse:    { email: "c.rodriguez@sanrafael.com", password: "enfermeria123" },
+    };
+    setEmail(DEMO[role].email);
+    setPassword(DEMO[role].password);
     setError("");
   };
 
