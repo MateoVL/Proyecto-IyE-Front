@@ -1,23 +1,24 @@
 import { Search, Users, UserPlus, Filter, Calendar, Clock, MapPin, FileText, Activity } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PatientRecord } from './PatientRecord';
-
+import nurseService from '../../services/nurseService';
 interface Patient {
   id: number;
   name: string;
   age: number;
   conditions: string[];
-  email: string;
-  phone: string;
-  address: string;
-  bloodType: string;
-  allergies: string;
-  medications: string;
+  status: string;
   lastVisit: string;
   nextVisit: string;
-  status: string;
-  emergencyContact: string;
+  room: string;
+  phone: string;
+  email?: string;
+  address: string;
+  bloodType: string;
+  emergencyName: string;
   emergencyPhone: string;
+  alergies?: string[];
+  actualMeds?: string[];
   alertPattern?: string;
   lastMeasurement?: string;
 }
@@ -33,6 +34,7 @@ interface Appointment {
   priority: string;
 }
 
+/*
 const mockPatients: Patient[] = [
   {
     id: 1,
@@ -270,13 +272,29 @@ const upcomingAppointments: Appointment[] = [
     priority: 'low'
   }
 ];
+*/
 
 export function NurseDashboard() {
-  const [patients] = useState<Patient[]>(mockPatients);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isRecordOpen, setIsRecordOpen] = useState(false);
+  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
+
+  const init = async () => {
+    try {
+      const patientData = await nurseService.getPatients();
+      setPatients(patientData.data);
+      const appointmentData = await nurseService.getFutureAppointments();
+      setUpcomingAppointments(appointmentData.data);
+    } catch (error) {
+      console.log("Error cargando dashboard", error);
+    }
+  };
+  useEffect(() => {
+    init();
+  }, []);
 
   const filteredPatients = patients.filter(patient => {
     const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -478,7 +496,11 @@ export function NurseDashboard() {
                         <p className="font-medium text-blue-600 hover:text-blue-700">{patient.name}</p>
                       </td>
                       <td className="px-6 py-4 text-gray-700">{patient.age} años</td>
-                      <td className="px-6 py-4 text-gray-700">{patient.conditions.join(', ')}</td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {Array.isArray(patient.conditions)
+                          ? patient.conditions.join(', ')
+                          : 'Sin condiciones'}
+                      </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(patient.status)}`}>
                           {getStatusLabel(patient.status)}

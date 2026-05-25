@@ -1,14 +1,24 @@
 import { AlertCircle, TrendingUp, Users, Activity, Bell, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useState, useEffect } from 'react';
-import {
-  getRecentAlerts,
-  getActiveAlertsQuantity,
-  getPatientsQuantity,
-  type RecentAlertDto,
-} from '../../services/dashboardService';
+import directorService from '../../services/directorService';
 
-// ── Mock data estática (gráficos de tendencia — sin endpoint histórico aún) ──
+
+const initialMetricsData = [
+  { id: 1, title: 'Pacientes Crónicos', value: '0', icon: Users, color: 'bg-blue-500', live: true },
+  { id: 2, title: 'Alertas Activas', value: '0', icon: AlertCircle, color: 'bg-red-500', live: true },
+  { id: 3, title: 'Seguimientos Hoy', value: '0', icon: Activity, color: 'bg-green-500', live: true },
+  { id: 4, title: 'Tasa de Control', value: '0%', icon: TrendingUp, color: 'bg-purple-500', live: true },
+];
+/*
+// Mock data
+const metricsData = [
+  { id: 1, title: 'Pacientes Crónicos', value: '248', change: '+12', icon: Users, color: 'bg-blue-500', live: true },
+  { id: 2, title: 'Alertas Activas', value: '23', change: '+5', icon: AlertCircle, color: 'bg-red-500', live: true },
+  { id: 3, title: 'Seguimientos Hoy', value: '45', change: '+8', icon: Activity, color: 'bg-green-500', live: true },
+  { id: 4, title: 'Tasa de Control', value: '87%', change: '+3%', icon: TrendingUp, color: 'bg-purple-500', live: true },
+];
+
 const chartData = [
   { mes: 'Ene', controlados: 185, descompensados: 45, alertas: 12 },
   { mes: 'Feb', controlados: 192, descompensados: 42, alertas: 15 },
@@ -25,63 +35,127 @@ const chronicPatients = [
   { id: 5, name: 'Laura Fernández', age: 58, condition: 'Diabetes Tipo 1', status: 'controlled', lastVisit: '2026-05-17', nextVisit: '2026-05-24' },
   { id: 6, name: 'Pedro Gómez', age: 70, condition: 'Hipertensión', status: 'warning', lastVisit: '2026-05-14', nextVisit: '2026-05-21' },
 ];
+*/
+
+type Alert = {
+  id: number;
+  patient: string;
+  condition: string;
+  alert: string;
+  priority: 'critical' | 'high' | 'medium';
+  time: string;
+};
+
+type ChronicPatient = {
+  id: number;
+  name: string;
+  age: number;
+  condition: string;
+  status: string;
+  lastVisit: string;
+  nextVisit: string;
+  room?: string;
+  phone?: string;
+};
+
+type HistoricEntry = {
+  mes: string;
+  controlados: number;
+  descompensados: number;
+  alertas: number;
+};
 
 export function DirectorDashboard() {
   // ── Estado local ────────────────────────────────────────────────────────────
   const [filterStatus,   setFilterStatus]   = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
 
-  // ── Estado de datos del backend ─────────────────────────────────────────────
-  const [totalPacientes, setTotalPacientes] = useState<number | null>(null);
-  const [totalAlertas,   setTotalAlertas]   = useState<number | null>(null);
-  const [alerts,         setAlerts]         = useState<RecentAlertDto[]>([]);
+
+  const [chartData, setChartData] = useState<HistoricEntry[]>([]);
+  const [metricsData, setMetricsData] = useState(initialMetricsData);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [chronicPatients, setChronicPatients] = useState<ChronicPatient[]>([]);
   const [loading,        setLoading]        = useState(true);
   const [error,          setError]          = useState<string | null>(null);
 
-  // ── Fetch de datos reales ────────────────────────────────────────────────────
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [patientsRes, alertsQtyRes, recentAlertsRes] = await Promise.all([
-        getPatientsQuantity(),
-        getActiveAlertsQuantity(),
-        getRecentAlerts(),
-      ]);
-      setTotalPacientes(patientsRes.data.quantity);
-      setTotalAlertas(alertsQtyRes.data.quantity);
-      setAlerts(recentAlertsRes.data);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al conectar con el backend';
-      setError(msg);
-      console.error('[DirectorDashboard] Error fetching data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const init = async () => {
+  try {
+    // gráfico
+    const historicResponse = await directorService.getHistoric();
+    setChartData(historicResponse.data);
 
-  useEffect(() => { fetchData(); }, []);
+    // alertas
+    const alertsResponse = await directorService.getRecentAlerts();
+    setAlerts(alertsResponse.data);
 
-  // ── Métricas (mezcla real + estática) ────────────────────────────────────────
-  const metricsData = [
-    {
-      id: 1, title: 'Pacientes Crónicos',
-      value: totalPacientes !== null ? String(totalPacientes) : '—',
-      change: '+12', icon: Users, color: 'bg-blue-500',
-      live: true,
-    },
-    {
-      id: 2, title: 'Alertas Activas',
-      value: totalAlertas !== null ? String(totalAlertas) : '—',
-      change: '+5', icon: AlertCircle, color: 'bg-red-500',
-      live: true,
-    },
-    { id: 3, title: 'Seguimientos Hoy', value: '45', change: '+8', icon: Activity, color: 'bg-green-500', live: false },
-    { id: 4, title: 'Tasa de Control',  value: '87%', change: '+3%', icon: TrendingUp, color: 'bg-purple-500', live: false },
-  ];
+    // pacientes crónicos
+    const chronicResponse = await directorService.getPatients();
+    setChronicPatients(chronicResponse.data);
 
-  const filteredAlerts   = alerts.filter(a => filterPriority === 'all' || a.priority === filterPriority);
-  const filteredPatients = chronicPatients.filter(p => filterStatus === 'all' || p.status === filterStatus);
+    // métricas
+    const [
+      chronicPatients,
+      activeAlerts,
+      todayFollowups,
+      controlRate
+    ] = await Promise.all([
+      directorService.getAllPatientsQuantity(),
+      directorService.getActiveAlertsQuantity(),
+      directorService.getFollowUpQuantity(),
+      directorService.getControlRate()
+    ]);
+
+
+    setMetricsData((prev) =>
+      prev.map((metric) => {
+        switch (metric.id) {
+          case 1:
+            return {
+              ...metric,
+              value: chronicPatients.data.quantity.toString()
+            };
+
+          case 2:
+            return {
+              ...metric,
+              value: activeAlerts.data.quantity.toString()
+            };
+
+          case 3:
+            return {
+              ...metric,
+              value: todayFollowups.data.quantity.toString()
+            };
+
+          case 4:
+            return {
+              ...metric,
+              value: `${Number(controlRate.data.controlRate) * 100}%`
+            };
+
+          default:
+            return metric;
+        }
+      })
+    );
+
+  } catch (error) {
+    console.log("Error cargando dashboard", error);
+  }finally {
+  setLoading(false);
+}
+};
+
+useEffect(() => {
+  init();
+}, []);
+  const filteredAlerts = alerts.filter(alert =>
+    filterPriority === 'all' || alert.priority === filterPriority
+  );
+
+  const filteredPatients = chronicPatients.filter(patient =>
+    filterStatus === 'all' || patient.status === filterStatus
+  );
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -130,7 +204,7 @@ export function DirectorDashboard() {
             </span>
           )}
           <button
-            onClick={fetchData}
+            onClick={init}
             disabled={loading}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors text-sm"
           >
@@ -154,7 +228,6 @@ export function DirectorDashboard() {
                   {metric.live && (
                     <span className={`w-2 h-2 rounded-full ${loading ? 'bg-yellow-400' : error ? 'bg-red-400' : 'bg-green-400'}`} title={loading ? 'Cargando...' : error ? 'Error' : 'Datos en vivo'} />
                   )}
-                  <span className="text-sm text-green-600 font-medium">{metric.change}</span>
                 </div>
               </div>
               <h3 className="text-gray-600 text-sm mb-1">{metric.title}</h3>
@@ -213,9 +286,9 @@ export function DirectorDashboard() {
                 onChange={(e) => setFilterPriority(e.target.value)}
               >
                 <option value="all">Todas</option>
-                <option value="critical">Críticas</option>
-                <option value="high">Altas</option>
-                <option value="medium">Medias</option>
+                <option value="critical">Críticos</option>
+                <option value="high">En Observación</option>
+                <option value="medium">Controlados</option>
               </select>
             </div>
           </div>
