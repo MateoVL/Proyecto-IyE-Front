@@ -1,6 +1,7 @@
 import { Search, Users, UserPlus, Filter, Calendar, Clock, MapPin, FileText, Activity } from 'lucide-react';
 import { useState } from 'react';
 import { PatientRecord } from './PatientRecord';
+import nurseService from '../services/nurse.service';
 
 interface Patient {
   id: number;
@@ -272,11 +273,22 @@ const upcomingAppointments: Appointment[] = [
 ];
 
 export function NurseDashboard() {
-  const [patients] = useState<Patient[]>(mockPatients);
+  const [patients, setPatients] = useState<Patient[]>(mockPatients);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isRecordOpen, setIsRecordOpen] = useState(false);
+
+  const init = async () => {
+    try {
+      // gráfico
+      const patientData = await nurseService.getPatients();
+      setPatients(patientData.data);
+  
+    } catch (error) {
+      console.log("Error cargando dashboard", error);
+    }
+  };
 
   const filteredPatients = patients.filter(patient => {
     const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
