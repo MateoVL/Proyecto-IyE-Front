@@ -17,11 +17,11 @@ export default function App() {
 
   const navUser = user
     ? {
-        name: user.name,
-        role: user.roles.includes('director') ? 'Director Médico' : 'Enfermera',
-        email: user.email,
-        avatar: user.avatar,
-      }
+      name: user.name,
+      role: user.roles.includes('director') ? 'Director Médico' : 'Enfermera',
+      email: user.email,
+      avatar: user.avatar,
+    }
     : { name: '', role: '', email: '', avatar: '' };
 
   if (isLoading) {
@@ -45,17 +45,9 @@ export default function App() {
         <Routes>
           {/* Públicas */}
           <Route path="/login" element={<LoginView />} />
+          <Route path="/home" element={<HomeView onSelectRole={() => { }} />} />
 
           {/* Protegidas */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <HomeView onSelectRole={() => {}} />
-              </ProtectedRoute>
-            }
-          />
-
           <Route
             path="/director"
             element={
@@ -95,10 +87,13 @@ export default function App() {
             }
           />
 
-          {/* Ruta no encontrada */}
+          {/* Ruta raíz redirige a /home */}
+          <Route path="/" element={<Navigate to="/home" replace />} />
+
+          {/* Ruta no encontrada redirige a /home */}
           <Route
             path="*"
-            element={<Navigate to={isAuthenticated ? '/' : '/login'} replace />}
+            element={<Navigate to="/home" replace />}
           />
         </Routes>
       </main>
