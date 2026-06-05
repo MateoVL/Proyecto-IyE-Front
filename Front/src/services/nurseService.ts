@@ -7,7 +7,7 @@ export interface ChronicPatient {
   id: number;
   name: string;
   age: number;
-  conditions: string[];
+  condition: string[];
   status: string;
   lastVisit: string;
   nextVisit: string;
@@ -35,6 +35,44 @@ export interface Appointment {
   priority: string;
 }
 
+export interface Patient {
+  idPatient: number;
+  name: string;
+  age: number;
+  condition: Condition[];
+  status: string;
+  lastVisit: string;
+  nextVisit: string;
+  room: string | null;
+  phone: string;
+  mail: string;
+  address: string;
+  bloodType: string;
+  emergencyName: string;
+  emergencyPhone: string;
+  alergies: string[];
+  actualMeds: string[];
+}
+
+export interface Condition {
+  id: number;
+  name: string;
+  description: string;
+  indicators: Indicator[];
+  lastUpdate: string;
+  notes: string;
+}
+
+export interface Indicator {
+  id: number;
+  name: string;
+  quantity: number;
+  unit: string;
+  lower: number;
+  upper: number;
+  state: string;
+}
+
 // ── Endpoints ─────────────────────────────────────────────────────────────────
 
 
@@ -42,7 +80,7 @@ export const getPatients = () =>
   httpCommon.get<ChronicPatient[]>('/v1/paciente/patients');
 
 export const getMedicalRecord = (idPatient: number) =>
-  httpCommon.get<ChronicPatient[]>(`/v1/medical/record/${idPatient}`);
+  httpCommon.get<Patient[]>(`/v1/medical/record/${idPatient}`);
 
 export const getFutureAppointments = () =>
   httpCommon.get<Appointment[]>(`/v1/control/future/appointments`);

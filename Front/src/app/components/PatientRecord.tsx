@@ -1,13 +1,12 @@
 import { X, User, Phone, Mail, MapPin, Calendar, Heart, Activity, Edit, Trash2, Save } from 'lucide-react';
 import { useState } from 'react';
 import { PathologySheet } from './PathologySheet';
-import nurseService from '../../services/nurseService';
 
-interface Patient {
+interface ChronicPatient {
   id: number;
   name: string;
   age: number;
-  conditions: string[];
+  condition?: string[];
   email?: string;
   phone: string;
   address: string;
@@ -24,14 +23,14 @@ interface Patient {
 interface PatientRecordProps {
   isOpen: boolean;
   onClose: () => void;
-  patient: Patient | null;
-  onUpdate?: (patient: Patient) => void;
+  patient: ChronicPatient | null;
+  onUpdate?: (patient: ChronicPatient) => void;
   onDelete?: (patientId: number) => void;
 }
 
 export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: PatientRecordProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedPatient, setEditedPatient] = useState<Patient | null>(patient);
+  const [editedPatient, setEditedPatient] = useState<ChronicPatient | null>(patient);
   const [selectedPathology, setSelectedPathology] = useState<string | null>(null);
 
   if (!isOpen || !patient) return null;
@@ -82,6 +81,30 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
 
   const currentPatient = isEditing ? editedPatient : patient;
   if (!currentPatient) return null;
+
+  const formatValue = (value?: string | null) => {
+    if (value === undefined || value === null) return '---';
+    const trimmed = String(value).trim();
+    return trimmed.length > 0 ? trimmed : '---';
+  };
+
+  const formatList = (values?: string[] | null) => {
+    if (!Array.isArray(values)) return '---';
+    const filtered = values.filter((item) => item !== null && item !== undefined && String(item).trim() !== '');
+    return filtered.length > 0 ? filtered.join(', ') : '---';
+  };
+
+  const conditionList = Array.isArray(currentPatient.condition)
+    ? currentPatient.condition
+    : [];
+
+  const alergiesList = Array.isArray(currentPatient.alergies)
+    ? currentPatient.alergies
+    : [];
+
+  const actualMedsList = Array.isArray(currentPatient.actualMeds)
+    ? currentPatient.actualMeds
+    : [];
 
   return (
     <div
@@ -195,12 +218,12 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                       {isEditing ? (
                         <input
                           type="email"
-                          value={currentPatient.email}
+                          value={currentPatient.email ?? ''}
                           onChange={(e) => setEditedPatient({ ...currentPatient, email: e.target.value })}
                           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
-                        <p className="text-gray-900">{currentPatient.email}</p>
+                        <p className="text-gray-900">{formatValue(currentPatient.email)}</p>
                       )}
                     </div>
                   </div>
@@ -213,12 +236,12 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                       {isEditing ? (
                         <input
                           type="tel"
-                          value={currentPatient.phone}
+                          value={currentPatient.phone ?? ''}
                           onChange={(e) => setEditedPatient({ ...currentPatient, phone: e.target.value })}
                           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
-                        <p className="text-gray-900">{currentPatient.phone}</p>
+                        <p className="text-gray-900">{formatValue(currentPatient.phone)}</p>
                       )}
                     </div>
                   </div>
@@ -231,12 +254,12 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                       {isEditing ? (
                         <input
                           type="text"
-                          value={currentPatient.address}
+                          value={currentPatient.address ?? ''}
                           onChange={(e) => setEditedPatient({ ...currentPatient, address: e.target.value })}
                           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
-                        <p className="text-gray-900">{currentPatient.address}</p>
+                        <p className="text-gray-900">{formatValue(currentPatient.address)}</p>
                       )}
                     </div>
                   </div>
@@ -249,12 +272,12 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                       {isEditing ? (
                         <input
                           type="text"
-                          value={currentPatient.bloodType}
+                          value={currentPatient.bloodType ?? ''}
                           onChange={(e) => setEditedPatient({ ...currentPatient, bloodType: e.target.value })}
                           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
-                        <p className="text-gray-900">{currentPatient.bloodType}</p>
+                        <p className="text-gray-900">{formatValue(currentPatient.bloodType)}</p>
                       )}
                     </div>
                   </div>
@@ -270,12 +293,12 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                     {isEditing ? (
                       <input
                         type="text"
-                        value={currentPatient.emergencyName}
+                        value={currentPatient.emergencyName ?? ''}
                         onChange={(e) => setEditedPatient({ ...currentPatient, emergencyName: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     ) : (
-                      <p className="text-gray-900">{currentPatient.emergencyName}</p>
+                      <p className="text-gray-900">{formatValue(currentPatient.emergencyName)}</p>
                     )}
                   </div>
                   <div>
@@ -283,12 +306,12 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                     {isEditing ? (
                       <input
                         type="tel"
-                        value={currentPatient.emergencyPhone}
+                        value={currentPatient.emergencyPhone ?? ''}
                         onChange={(e) => setEditedPatient({ ...currentPatient, emergencyPhone: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     ) : (
-                      <p className="text-gray-900">{currentPatient.emergencyPhone}</p>
+                      <p className="text-gray-900">{formatValue(currentPatient.emergencyPhone)}</p>
                     )}
                   </div>
                 </div>
@@ -309,17 +332,14 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                       {isEditing ? (
                         <input
                           type="text"
-                          value={Array.isArray(currentPatient.conditions)
-                            ? currentPatient.conditions.join(', ')
-                            : ''}
-                          onChange={(e) => setEditedPatient({ ...currentPatient, conditions: e.target.value.split(',').map(c => c.trim()) })}
+                          value={conditionList.join(', ')}
+                          onChange={(e) => setEditedPatient({ ...currentPatient, condition: e.target.value.split(',').map(c => c.trim()) })}
                           placeholder="Separar con comas"
                           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
                         <div className="flex flex-wrap gap-2">
-                          {Array.isArray(currentPatient.conditions) &&
-  currentPatient.conditions.map((condition, index) => (
+                          {conditionList.length > 0 ? conditionList.map((condition, index) => (
                             <button
                               key={index}
                               onClick={() => setSelectedPathology(condition)}
@@ -327,7 +347,9 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                             >
                               {condition}
                             </button>
-                          ))}
+                          )) : (
+                            <p className="text-gray-900">---</p>
+                          )}
                         </div>
                       )}
                     </div>
@@ -346,18 +368,14 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                     <label className="block text-sm font-medium text-gray-700 mb-2">Alergias</label>
                     {isEditing ? (
                       <textarea
-                        value={Array.isArray(currentPatient.alergies)
-                          ? currentPatient.alergies.join(', ')
-                          : ''}
+                        value={alergiesList.join(', ')}
                         onChange={(e) => setEditedPatient({ ...currentPatient, alergies: e.target.value.split(',').map(a => a.trim()) })}
                         rows={3}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     ) : (
                       <p className="text-gray-900">
-                        {Array.isArray(currentPatient.alergies)
-                          ? currentPatient.alergies.join(', ')
-                          : 'Sin alergias'}
+                        {alergiesList.length > 0 ? alergiesList.join(', ') : '---'}
                       </p>
                     )}
                   </div>
@@ -367,18 +385,14 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                     <label className="block text-sm font-medium text-gray-700 mb-2">Medicamentos Actuales</label>
                     {isEditing ? (
                       <textarea
-                        value={Array.isArray(currentPatient.actualMeds)
-                          ? currentPatient.actualMeds.join(', ')
-                          : ''}
-                        onChange={(e) => setEditedPatient({ ...currentPatient, actualMeds: e.target.value.split(',').map(m => m.trim()) })}
+                        value={actualMedsList.join(', ')}
+                        onChange={(e) => setEditedPatient({ ...currentPatient, actualMeds: e.target.value.split(', ').map(m => m.trim()) })}
                         rows={3}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     ) : (
                       <p className="text-gray-900">
-                        {Array.isArray(currentPatient.actualMeds)
-                          ? currentPatient.actualMeds.join(', ')
-                          : 'Sin medicamentos'}
+                        {actualMedsList.length > 0 ? actualMedsList.join(', ') : '---'}
                       </p>
                     )}
                   </div>
@@ -396,7 +410,7 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
-                        <p className="text-gray-900">{new Date(currentPatient.lastVisit).toLocaleDateString('es-ES')}</p>
+                        <p className="text-gray-900">{currentPatient.lastVisit ? new Date(currentPatient.lastVisit).toLocaleDateString('es-ES') : '---'}</p>
                       )}
                     </div>
                   </div>
@@ -414,7 +428,7 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
-                        <p className="text-gray-900">{new Date(currentPatient.nextVisit).toLocaleDateString('es-ES')}</p>
+                        <p className="text-gray-900">{currentPatient.nextVisit ? new Date(currentPatient.nextVisit).toLocaleDateString('es-ES') : '---'}</p>
                       )}
                     </div>
                   </div>

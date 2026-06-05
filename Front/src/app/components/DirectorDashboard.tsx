@@ -87,6 +87,7 @@ export function DirectorDashboard() {
     // alertas
     const alertsResponse = await directorService.getRecentAlerts();
     setAlerts(alertsResponse.data);
+    console.log("Alertas cargadas:", alertsResponse.data);
 
     // pacientes crónicos
     const chronicResponse = await directorService.getPatients();
@@ -186,6 +187,33 @@ useEffect(() => {
 
   const priorityLabel = (p: string) =>
     p === 'critical' ? 'Crítica' : p === 'high' ? 'Alta' : 'Media';
+
+  const formatValue = (value: any) => {
+    // Si es null o undefined
+    if (value === null || value === undefined) {
+      return '----';
+    }
+
+    // Si es un array, lo une con comas
+    if (Array.isArray(value)) {
+      const filtered = value.filter(v => v && (typeof v === 'string' ? v.toString().trim() !== '' : true));
+      if (filtered.length === 0) return '----';
+      return filtered.map(v => typeof v === 'string' ? v.trim() : v).join(', ');
+    }
+
+    // Si es un string
+    if (typeof value === 'string') {
+      return value.trim() === '' ? '----' : value;
+    }
+
+    // Para números u otros tipos
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      return String(value);
+    }
+
+    // Fallback
+    return '----';
+  };
 
   return (
     <div className="max-w-[1400px] mx-auto p-6">
@@ -301,14 +329,14 @@ useEffect(() => {
               filteredAlerts.map((alert) => (
                 <div key={alert.id} className="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-medium">{alert.patient}</h3>
+                    <h3 className="font-medium">{formatValue(alert.patient)}</h3>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(alert.priority)}`}>
                       {priorityLabel(alert.priority)}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-1">{alert.condition}</p>
-                  <p className="text-sm mb-2">{alert.alert}</p>
-                  <span className="text-xs text-gray-500">{alert.time}</span>
+                  <p className="text-sm text-gray-600 mb-1">{formatValue(alert.condition)}</p>
+                  <p className="text-sm mb-2">{formatValue(alert.alert)}</p>
+                  <span className="text-xs text-gray-500">{formatValue(alert.time)}</span>
                 </div>
               ))
             )}
@@ -340,8 +368,8 @@ useEffect(() => {
               <div key={patient.id} className="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <h3 className="font-medium">{patient.name}</h3>
-                    <p className="text-sm text-gray-600">{patient.age} años - {patient.condition}</p>
+                    <h3 className="font-medium">{formatValue(patient.name)}</h3>
+                    <p className="text-sm text-gray-600">{formatValue(patient.age)} años - {formatValue(patient.condition)}</p>
                   </div>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(patient.status)}`}>
                     {getStatusIcon(patient.status)}
@@ -349,8 +377,8 @@ useEffect(() => {
                   </span>
                 </div>
                 <div className="flex gap-4 text-xs text-gray-500">
-                  <span>Última visita: {patient.lastVisit}</span>
-                  <span>Próxima: {patient.nextVisit}</span>
+                  <span>Última visita: {formatValue(patient.lastVisit)}</span>
+                  <span>Próxima: {formatValue(patient.nextVisit)}</span>
                 </div>
               </div>
             ))}
