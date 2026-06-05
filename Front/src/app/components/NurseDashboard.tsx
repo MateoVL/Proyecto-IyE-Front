@@ -258,7 +258,7 @@ export function NurseDashboard() {
   const [patients, setPatients] = useState<ChronicPatient[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [selectedPatient, setSelectedPatient] = useState<ChronicPatient | null>(null);
+  const [selectedMedicalRecord, setSelectedMedicalRecord] = useState<MedicalRecordPatient | null>(null);
   const [isRecordOpen, setIsRecordOpen] = useState(false);
   const [recordLoading, setRecordLoading] = useState(false);
   const [recordError, setRecordError] = useState<string | null>(null);
@@ -313,34 +313,12 @@ export function NurseDashboard() {
     try {
       const response = await nurseService.getMedicalRecord(patient.id);
       const rawRecord = Array.isArray(response.data) ? response.data[0] : response.data as MedicalRecordPatient;
-
+      console.log('Registro médico recibido:', rawRecord);
       if (!rawRecord) {
         throw new Error('Registro médico no disponible');
       }
 
-      const mappedRecord: ChronicPatient = {
-        ...patient,
-        id: patient.id,
-        name: rawRecord.name ?? patient.name,
-        age: rawRecord.age ?? patient.age,
-        condition: normalizeStringArray(rawRecord.condition ?? patient.condition),
-        status: rawRecord.status ?? patient.status,
-        lastVisit: rawRecord.lastVisit ?? patient.lastVisit,
-        nextVisit: rawRecord.nextVisit ?? patient.nextVisit,
-        room: rawRecord.room ?? patient.room,
-        phone: rawRecord.phone ?? patient.phone,
-        email: rawRecord.mail ?? patient.email ?? '',
-        address: rawRecord.address ?? patient.address,
-        bloodType: rawRecord.bloodType ?? patient.bloodType,
-        emergencyName: rawRecord.emergencyName ?? patient.emergencyName,
-        emergencyPhone: rawRecord.emergencyPhone ?? patient.emergencyPhone,
-        alergies: normalizeStringArray(rawRecord.alergies ?? patient.alergies),
-        actualMeds: normalizeStringArray(rawRecord.actualMeds ?? patient.actualMeds),
-        alertPattern: patient.alertPattern,
-        lastMeasurement: patient.lastMeasurement,
-      };
-
-      setSelectedPatient(mappedRecord);
+      setSelectedMedicalRecord(rawRecord);
       setIsRecordOpen(true);
     } catch (error) {
       console.error('Error cargando el registro médico:', error);
@@ -673,7 +651,7 @@ export function NurseDashboard() {
       <PatientRecord
         isOpen={isRecordOpen}
         onClose={() => setIsRecordOpen(false)}
-        patient={selectedPatient}
+        patient={selectedMedicalRecord}
       />
     </div>
   );

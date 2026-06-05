@@ -1,37 +1,25 @@
 import { X, User, Phone, Mail, MapPin, Calendar, Heart, Activity, Edit, Trash2, Save } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import type { Patient as MedicalRecordPatient, Condition } from '../../services/nurseService';
 import { PathologySheet } from './PathologySheet';
-
-interface ChronicPatient {
-  id: number;
-  name: string;
-  age: number;
-  condition?: string[];
-  email?: string;
-  phone: string;
-  address: string;
-  bloodType: string;
-  alergies?: string[];
-  actualMeds?: string[];
-  lastVisit: string;
-  nextVisit: string;
-  status: string;
-  emergencyName: string;
-  emergencyPhone: string;
-}
 
 interface PatientRecordProps {
   isOpen: boolean;
   onClose: () => void;
-  patient: ChronicPatient | null;
-  onUpdate?: (patient: ChronicPatient) => void;
+  patient: MedicalRecordPatient | null;
+  onUpdate?: (patient: MedicalRecordPatient) => void;
   onDelete?: (patientId: number) => void;
 }
 
 export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: PatientRecordProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedPatient, setEditedPatient] = useState<ChronicPatient | null>(patient);
-  const [selectedPathology, setSelectedPathology] = useState<string | null>(null);
+  const [editedPatient, setEditedPatient] = useState<MedicalRecordPatient | null>(patient);
+  const [selectedCondition, setSelectedCondition] = useState<Condition | null>(null);
+  console.log('PatientRecord rendered with patient:', patient);
+
+  useEffect(() => {
+    setEditedPatient(patient);
+  }, [patient]);
 
   if (!isOpen || !patient) return null;
 
@@ -55,7 +43,7 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
   const handleDelete = () => {
     if (window.confirm(`¿Está seguro que desea eliminar el registro de ${patient.name}?`)) {
       if (onDelete) {
-        onDelete(patient.id);
+        onDelete(patient.idPatient);
       }
       onClose();
     }
@@ -63,18 +51,18 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'controlled': return 'bg-green-100 text-green-800';
-      case 'warning': return 'bg-yellow-100 text-yellow-800';
-      case 'critical': return 'bg-red-100 text-red-800';
+      case 'controlado': return 'bg-green-100 text-green-800';
+      case 'en observación': return 'bg-yellow-100 text-yellow-800';
+      case 'crítico': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'controlled': return 'Controlado';
-      case 'warning': return 'En Observación';
-      case 'critical': return 'Crítico';
+      case 'controlado': return 'Controlado';
+      case 'en observación': return 'En Observación';
+      case 'crítico': return 'Crítico';
       default: return 'Normal';
     }
   };
@@ -96,7 +84,32 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
 
   const conditionList = Array.isArray(currentPatient.condition)
     ? currentPatient.condition
+        .map((condition) => {
+          if (!condition) return '';
+          return condition.name?.trim() || condition.description?.trim() || '';
+        })
+        .filter((condition) => condition.length > 0)
     : [];
+
+  const buildConditionsFromNames = (names: string[]) => {
+    return names
+      .map((name) => name.trim())
+      .filter((name) => name.length > 0)
+      .map((name, index) => {
+        const existing = Array.isArray(currentPatient.condition)
+          ? currentPatient.condition.find((condition) => condition.name === name || condition.description === name)
+          : undefined;
+
+        return existing ?? {
+          id: index,
+          name,
+          description: '',
+          indicators: [],
+          lastUpdate: '',
+          notes: '',
+        };
+      });
+  };
 
   const alergiesList = Array.isArray(currentPatient.alergies)
     ? currentPatient.alergies
@@ -218,12 +231,12 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                       {isEditing ? (
                         <input
                           type="email"
-                          value={currentPatient.email ?? ''}
-                          onChange={(e) => setEditedPatient({ ...currentPatient, email: e.target.value })}
+                          value={currentPatient.mail ?? ''}
+                          onChange={(e) => setEditedPatient({ ...currentPatient, mail: e.target.value })}
                           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
-                        <p className="text-gray-900">{formatValue(currentPatient.email)}</p>
+                        <p className="text-gray-900">{formatValue(currentPatient.mail)}</p>
                       )}
                     </div>
                   </div>
@@ -333,23 +346,26 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
                         <input
                           type="text"
                           value={conditionList.join(', ')}
-                          onChange={(e) => setEditedPatient({ ...currentPatient, condition: e.target.value.split(',').map(c => c.trim()) })}
+                          onChange={(e) => setEditedPatient({ ...currentPatient, condition: buildConditionsFromNames(e.target.value.split(',')) })}
                           placeholder="Separar con comas"
                           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       ) : (
                         <div className="flex flex-wrap gap-2">
-                          {conditionList.length > 0 ? conditionList.map((condition, index) => (
-                            <button
-                              key={index}
-                              onClick={() => setSelectedPathology(condition)}
-                              className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors cursor-pointer border border-blue-300"
-                            >
-                              {condition}
-                            </button>
-                          )) : (
-                            <p className="text-gray-900">---</p>
-                          )}
+                          
+                          {currentPatient.condition.length > 0 ? (
+                              currentPatient.condition.map((condition) => (
+                                <button
+                                  key={condition.id}
+                                  onClick={() => setSelectedCondition(condition)}
+                                  className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors cursor-pointer border border-blue-300"
+                                >
+                                  {condition.name}
+                                </button>
+                              ))
+                            ) : (
+                              <p className="text-gray-900">---</p>
+                            )}
                         </div>
                       )}
                     </div>
@@ -441,9 +457,9 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
 
       {/* Pathology Sheet */}
       <PathologySheet
-        isOpen={selectedPathology !== null}
-        onClose={() => setSelectedPathology(null)}
-        pathology={selectedPathology || ''}
+        isOpen={selectedCondition !== null}
+        onClose={() => setSelectedCondition(null)}
+        condition={selectedCondition}
       />
     </div>
   );
