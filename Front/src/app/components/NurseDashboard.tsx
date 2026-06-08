@@ -1,27 +1,10 @@
-import { Search, Users, UserPlus, Filter, Calendar, Clock, MapPin, FileText, Activity, MessageCircle, Send, X } from 'lucide-react';
+
+import { Search, Users, UserPlus, Filter, Calendar, Clock, MapPin, FileText, Activity } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { PatientRecord } from './PatientRecord';
-import nurseService from '../../services/nurseService';
-interface Patient {
-  id: number;
-  name: string;
-  age: number;
-  conditions: string[];
-  status: string;
-  lastVisit: string;
-  nextVisit: string;
-  room: string;
-  phone: string;
-  email?: string;
-  address: string;
-  bloodType: string;
-  emergencyName: string;
-  emergencyPhone: string;
-  alergies?: string[];
-  actualMeds?: string[];
-  alertPattern?: string;
-  lastMeasurement?: string;
-}
+import nurseService, { ChronicPatient, Patient as MedicalRecordPatient } from '../../services/nurseService';
+import { Send } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 interface Appointment {
   id: number;
@@ -274,21 +257,25 @@ const upcomingAppointments: Appointment[] = [
 ];
 */
 
+
 export function NurseDashboard() {
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<ChronicPatient[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [selectedMedicalRecord, setSelectedMedicalRecord] = useState<MedicalRecordPatient | null>(null);
   const [isRecordOpen, setIsRecordOpen] = useState(false);
+  const [recordLoading, setRecordLoading] = useState(false);
+  const [recordError, setRecordError] = useState<string | null>(null);
   const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
-  const [whatsAppPatient, setWhatsAppPatient] = useState<Patient | null>(null);
+  const [whatsAppPatient, setWhatsAppPatient] = useState<ChronicPatient | null>(null);
   const [whatsAppMessage, setWhatsAppMessage] = useState('');
 
   const init = async () => {
     try {
       const patientData = await nurseService.getPatients();
       setPatients(patientData.data);
+      console.log(patientData.data);
       const appointmentData = await nurseService.getFutureAppointments();
       setUpcomingAppointments(appointmentData.data);
     } catch (error) {
@@ -301,25 +288,68 @@ export function NurseDashboard() {
 
   const filteredPatients = patients.filter(patient => {
     const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         patient.conditions.some(c => c.toLowerCase().includes(searchTerm.toLowerCase()));
+      patient.condition.some(c => c.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = filterStatus === 'all' || patient.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
-  const handlePatientClick = (patient: Patient) => {
-    setSelectedPatient(patient);
-    setIsRecordOpen(true);
+  const normalizeStringArray = (value: any): string[] => {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+      return value
+        .map((item) => {
+          if (typeof item === 'string') return item.trim();
+          if (typeof item === 'number') return String(item);
+          if (item && typeof item === 'object') {
+            if (item.name && String(item.name).trim().length > 0) return String(item.name).trim();
+            if (item.description && String(item.description).trim().length > 0) return String(item.description).trim();
+          }
+          return null;
+        })
+        .filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+    }
+    if (typeof value === 'string') return [value.trim()];
+    return [String(value)];
   };
-  const handleWhatsAppClick = (patient: Patient, e: React.MouseEvent) => {
+
+  const handlePatientClick = async (patient: ChronicPatient) => {
+    setRecordError(null);
+    setRecordLoading(true);
+
+    try {
+      const response = await nurseService.getMedicalRecord(patient.id);
+      const rawRecord = Array.isArray(response.data) ? response.data[0] : response.data as MedicalRecordPatient;
+      console.log('Registro médico recibido:', rawRecord);
+      if (!rawRecord) {
+        throw new Error('Registro médico no disponible');
+      }
+
+      setSelectedMedicalRecord(rawRecord);
+      setIsRecordOpen(true);
+    } catch (error) {
+      console.error('Error cargando el registro médico:', error);
+      setRecordError('No se pudo cargar el registro médico. Intente nuevamente.');
+    } finally {
+      setRecordLoading(false);
+    }
+  };
+  const handleWhatsAppClick = (patient: ChronicPatient, e: React.MouseEvent) => {
     e.stopPropagation();
     setWhatsAppPatient(patient);
     setWhatsAppMessage('');
     setIsWhatsAppModalOpen(true);
   };
 
+  /* HARDCODEADO POR AHORA */
   const handleSendWhatsApp = () => {
     if (whatsAppMessage.trim() && whatsAppPatient) {
-      console.log(`Enviando mensaje a ${whatsAppPatient.name} (${whatsAppPatient.phone}): ${whatsAppMessage}`);
+      console.log(`Enviando mensaje a ${whatsAppPatient.name} ("56977020724"): ${whatsAppMessage}`);
+      try {
+        nurseService.sendWhatsAppMessage("56977020724", whatsAppMessage);
+        alert('Mensaje enviado correctamente');
+      } catch (error) {
+        alert('Error al enviar el mensaje');
+      }
       setIsWhatsAppModalOpen(false);
       setWhatsAppMessage('');
       setWhatsAppPatient(null);
@@ -356,7 +386,36 @@ export function NurseDashboard() {
     }
   };
 
+  const formatValue = (value: any) => {
+    // Si es null o undefined
+    if (value === null || value === undefined) {
+      return '---';
+    }
+
+    // Si es un array, lo une con comas
+    if (Array.isArray(value)) {
+      const filtered = value.filter(v => v && (typeof v === 'string' ? v.toString().trim() !== '' : true));
+      if (filtered.length === 0) return '---';
+      return filtered.map(v => typeof v === 'string' ? v.trim() : v).join(', ');
+    }
+
+    // Si es un string
+    if (typeof value === 'string') {
+      return value.trim() === '' ? '---' : value;
+    }
+
+    // Para números u otros tipos
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      return String(value);
+    }
+
+    // Fallback
+    return '---';
+  };
+
   const formatDate = (dateString: string) => {
+    if (!dateString) return '---';
+
     const date = new Date(dateString);
     const today = new Date('2026-05-20');
     const tomorrow = new Date('2026-05-21');
@@ -389,9 +448,8 @@ export function NurseDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div
           onClick={() => setFilterStatus('all')}
-          className={`bg-white rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${
-            filterStatus === 'all' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
-          }`}
+          className={`bg-white rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'all' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+            }`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -403,9 +461,8 @@ export function NurseDashboard() {
         </div>
         <div
           onClick={() => setFilterStatus('controlled')}
-          className={`bg-green-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${
-            filterStatus === 'controlled' ? 'border-green-500 ring-2 ring-green-200' : 'border-green-200'
-          }`}
+          className={`bg-green-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'controlled' ? 'border-green-500 ring-2 ring-green-200' : 'border-green-200'
+            }`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -417,9 +474,8 @@ export function NurseDashboard() {
         </div>
         <div
           onClick={() => setFilterStatus('warning')}
-          className={`bg-yellow-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${
-            filterStatus === 'warning' ? 'border-yellow-500 ring-2 ring-yellow-200' : 'border-yellow-200'
-          }`}
+          className={`bg-yellow-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'warning' ? 'border-yellow-500 ring-2 ring-yellow-200' : 'border-yellow-200'
+            }`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -431,9 +487,8 @@ export function NurseDashboard() {
         </div>
         <div
           onClick={() => setFilterStatus('critical')}
-          className={`bg-red-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${
-            filterStatus === 'critical' ? 'border-red-500 ring-2 ring-red-200' : 'border-red-200'
-          }`}
+          className={`bg-red-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'critical' ? 'border-red-500 ring-2 ring-red-200' : 'border-red-200'
+            }`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -515,8 +570,8 @@ export function NurseDashboard() {
                       </td>
                       <td className="px-6 py-4 text-gray-700">{patient.age} años</td>
                       <td className="px-6 py-4 text-gray-700">
-                        {Array.isArray(patient.conditions)
-                          ? patient.conditions.join(', ')
+                        {Array.isArray(patient.condition)
+                          ? patient.condition.join(', ')
                           : 'Sin condiciones'}
                       </td>
                       <td className="px-6 py-4">
@@ -620,64 +675,112 @@ export function NurseDashboard() {
       <PatientRecord
         isOpen={isRecordOpen}
         onClose={() => setIsRecordOpen(false)}
-        patient={selectedPatient}
+        patient={selectedMedicalRecord}
       />
       {/* WhatsApp Message Modal */}
-      <Dialog open={isWhatsAppModalOpen} onOpenChange={setIsWhatsAppModalOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full">
-                <MessageCircle className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-xl">Enviar Mensaje por WhatsApp</p>
-                {whatsAppPatient && (
-                  <p className="text-sm text-gray-600 font-normal mt-1">
-                    A: {whatsAppPatient.name} ({whatsAppPatient.phone})
-                  </p>
-                )}
-              </div>
-            </DialogTitle>
-          </DialogHeader>
+      {isWhatsAppModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-[600px] p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full">
+                  <MessageCircle className="w-5 h-5 text-green-600" />
+                </div>
 
-          <div className="space-y-4 mt-6">
-            <div>
-              <label htmlFor="whatsapp-message" className="block text-sm font-medium text-gray-700 mb-2">
-                Mensaje
-              </label>
-              <textarea
-                id="whatsapp-message"
-                rows={6}
-                value={whatsAppMessage}
-                onChange={(e) => setWhatsAppMessage(e.target.value)}
-                placeholder="Escriba su mensaje aquí..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              />
-              <p className="text-xs text-gray-500 mt-2">
-                El mensaje se enviará a través de WhatsApp al número registrado del paciente.
-              </p>
-            </div>
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    Enviar Mensaje por WhatsApp
+                  </h2>
 
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+                  {/* HARDCODEADO POR AHORA */}
+                  {whatsAppPatient && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      A: {whatsAppPatient.name} ("56977020724")
+                    </p>
+                  )}
+                </div>
+              </div>
+
               <button
                 onClick={() => setIsWhatsAppModalOpen(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="text-gray-500 hover:text-gray-700 text-xl"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Área de mensaje */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium mb-2">
+                Mensaje
+              </label>
+
+              <textarea
+                value={whatsAppMessage}
+                onChange={(e) => setWhatsAppMessage(e.target.value)}
+                rows={6}
+                className="w-full border rounded-lg p-3 resize-none"
+                placeholder="Escribe tu mensaje..."
+              />
+            </div>
+
+            {/* Botones */}
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setIsWhatsAppModalOpen(false)}
+                className="px-4 py-2 border rounded-lg hover:bg-gray-100"
               >
                 Cancelar
               </button>
+
               <button
                 onClick={handleSendWhatsApp}
                 disabled={!whatsAppMessage.trim()}
-                className="flex items-center gap-2 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-300"
               >
-                <Send className="w-4 h-4" />
-                <span>Enviar Mensaje</span>
+                Enviar Mensaje
               </button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+        </div>
+      )}
+
+
+      <div className="space-y-4 mt-6">
+        <div>
+          <label htmlFor="whatsapp-message" className="block text-sm font-medium text-gray-700 mb-2">
+            Mensaje
+          </label>
+          <textarea
+            id="whatsapp-message"
+            rows={6}
+            value={whatsAppMessage}
+            onChange={(e) => setWhatsAppMessage(e.target.value)}
+            placeholder="Escriba su mensaje aquí..."
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
+          <p className="text-xs text-gray-500 mt-2">
+            El mensaje se enviará a través de WhatsApp al número registrado del paciente.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+          <button
+            onClick={() => setIsWhatsAppModalOpen(false)}
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleSendWhatsApp}
+            disabled={!whatsAppMessage.trim()}
+            className="flex items-center gap-2 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            <Send className="w-4 h-4" />
+            <span>Enviar Mensaje</span>
+          </button>
+        </div>
+      </div>
+    </div >
   );
 }
