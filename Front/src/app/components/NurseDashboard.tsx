@@ -343,9 +343,9 @@ export function NurseDashboard() {
   /* HARDCODEADO POR AHORA */
   const handleSendWhatsApp = () => {
     if (whatsAppMessage.trim() && whatsAppPatient) {
-      console.log(`Enviando mensaje a ${whatsAppPatient.name} ("56977020724"): ${whatsAppMessage}`);
+      console.log(`Enviando mensaje a ${whatsAppPatient.name} (""): ${whatsAppMessage}`);
       try {
-        nurseService.sendWhatsAppMessage("56977020724", whatsAppMessage);
+        nurseService.sendWhatsAppMessage("", whatsAppMessage);
         alert('Mensaje enviado correctamente');
       } catch (error) {
         alert('Error al enviar el mensaje');
@@ -695,7 +695,7 @@ export function NurseDashboard() {
                   {/* HARDCODEADO POR AHORA */}
                   {whatsAppPatient && (
                     <p className="text-sm text-gray-600 mt-1">
-                      A: {whatsAppPatient.name} ("56977020724")
+                      A: {whatsAppPatient.name} ("")
                     </p>
                   )}
                 </div>
