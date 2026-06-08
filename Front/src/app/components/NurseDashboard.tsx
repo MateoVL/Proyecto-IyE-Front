@@ -278,6 +278,7 @@ export function NurseDashboard() {
       console.log(patientData.data);
       const appointmentData = await nurseService.getFutureAppointments();
       setUpcomingAppointments(appointmentData.data);
+      console.log("Citas futuras cargadas:", appointmentData.data);
     } catch (error) {
       console.log("Error cargando dashboard", error);
     }
@@ -355,20 +356,21 @@ export function NurseDashboard() {
       setWhatsAppPatient(null);
     }
   };
+
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'controlled': return 'bg-green-100 text-green-800';
-      case 'warning': return 'bg-yellow-100 text-yellow-800';
-      case 'critical': return 'bg-red-100 text-red-800';
+      case 'controlado': return 'bg-green-100 text-green-800';
+      case 'en observación': return 'bg-yellow-100 text-yellow-800';
+      case 'crítico': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'controlled': return 'Controlado';
-      case 'warning': return 'En Observación';
-      case 'critical': return 'Crítico';
+      case 'controlado': return 'Controlado';
+      case 'en observación': return 'En Observación';
+      case 'crítico': return 'Crítico';
       default: return 'Normal';
     }
   };
@@ -431,9 +433,9 @@ export function NurseDashboard() {
 
   const stats = {
     total: patients.length,
-    controlled: patients.filter(p => p.status === 'controlled').length,
-    warning: patients.filter(p => p.status === 'warning').length,
-    critical: patients.filter(p => p.status === 'critical').length
+    controlled: patients.filter(p => p.status === 'controlado').length,
+    warning: patients.filter(p => p.status === 'en observación').length,
+    critical: patients.filter(p => p.status === 'crítico').length
   };
 
   return (
@@ -540,6 +542,18 @@ export function NurseDashboard() {
         </div>
       </div>
 
+      {recordLoading && (
+        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+          Cargando registro médico...
+        </div>
+      )}
+
+      {recordError && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {recordError}
+        </div>
+      )}
+
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Patients Table - 2/3 */}
@@ -555,7 +569,6 @@ export function NurseDashboard() {
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Estado</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Patrón/Alerta</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Próxima Visita</th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">WhatsApp</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -566,9 +579,9 @@ export function NurseDashboard() {
                       className="hover:bg-gray-50 cursor-pointer transition-colors"
                     >
                       <td className="px-6 py-4">
-                        <p className="font-medium text-blue-600 hover:text-blue-700">{patient.name}</p>
+                        <p className="font-medium text-blue-600 hover:text-blue-700">{formatValue(patient.name)}</p>
                       </td>
-                      <td className="px-6 py-4 text-gray-700">{patient.age} años</td>
+                      <td className="px-6 py-4 text-gray-700">{formatValue(patient.age)} años</td>
                       <td className="px-6 py-4 text-gray-700">
                         {Array.isArray(patient.condition)
                           ? patient.condition.join(', ')
@@ -581,27 +594,17 @@ export function NurseDashboard() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm">
-                          <p className="text-gray-600 mb-1">{patient.alertPattern}</p>
+                          <p className="text-gray-600 mb-1">{formatValue(patient.alertPattern)}</p>
                           {patient.lastMeasurement && (
                             <div className="flex items-center gap-1 text-gray-500">
                               <Activity className="w-3 h-3" />
-                              <span className="text-xs">{patient.lastMeasurement}</span>
+                              <span className="text-xs">{formatValue(patient.lastMeasurement)}</span>
                             </div>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-gray-700">
-                        {new Date(patient.nextVisit).toLocaleDateString('es-ES')}
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={(e) => handleWhatsAppClick(patient, e)}
-                          className="inline-flex items-center gap-2 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                          title="Enviar mensaje por WhatsApp"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                          <span className="text-sm">Enviar</span>
-                        </button>
+                        {patient.nextVisit ? new Date(patient.nextVisit).toLocaleDateString('es-ES') : '---'}
                       </td>
                     </tr>
                   ))}
@@ -636,8 +639,8 @@ export function NurseDashboard() {
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <h3 className="font-medium">{appointment.patient}</h3>
-                      <p className="text-sm text-gray-600">{appointment.type}</p>
+                      <h3 className="font-medium">{formatValue(appointment.patient)}</h3>
+                      <p className="text-sm text-gray-600">{formatValue(appointment.type)}</p>
                     </div>
                   </div>
 
@@ -647,21 +650,21 @@ export function NurseDashboard() {
                       {formatDate(appointment.date)}
                     </span>
                     <Clock className="w-4 h-4 text-gray-500 ml-2" />
-                    <span className="text-sm text-gray-600">{appointment.time}</span>
+                    <span className="text-sm text-gray-600">{formatValue(appointment.time)}</span>
                   </div>
 
                   <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
                     <FileText className="w-4 h-4" />
-                    <span>{appointment.doctor}</span>
+                    <span>{formatValue(appointment.doctor)}</span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 text-sm text-gray-600">
                       <MapPin className="w-4 h-4" />
-                      <span>Hab. {appointment.room}</span>
+                      <span>Hab. {formatValue(appointment.room)}</span>
                     </div>
                     <span className={`text-xs font-medium ${getPriorityColor(appointment.priority)}`}>
-                      {appointment.priority === 'high' ? 'Prioritaria' : appointment.priority === 'medium' ? 'Normal' : 'Rutina'}
+                      {appointment.priority === 'high' ? 'Alta' : appointment.priority === 'medium' ? 'Media' : 'Rutina'}
                     </span>
                   </div>
                 </div>
