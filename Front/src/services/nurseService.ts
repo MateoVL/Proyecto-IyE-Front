@@ -85,9 +85,20 @@ export const getMedicalRecord = (idPatient: number) =>
 export const getFutureAppointments = () =>
   httpCommon.get<Appointment[]>(`/v1/control/future/appointments`);
 
+export const sendWhatsAppMessage = (
+  number: string,
+  message: string
+) => {
+  return httpCommon.post("/v1/api/whatsapp/send", {
+    number,
+    message,
+  });
+};
+
 
 export default {
   getPatients,
   getMedicalRecord,
-  getFutureAppointments
+  getFutureAppointments,
+  sendWhatsAppMessage
 };
