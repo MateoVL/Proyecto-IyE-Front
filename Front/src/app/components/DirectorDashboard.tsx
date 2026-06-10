@@ -169,24 +169,24 @@ useEffect(() => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'controlled': return 'bg-green-100 text-green-800';
-      case 'warning':    return 'bg-yellow-100 text-yellow-800';
-      case 'critical':   return 'bg-red-100 text-red-800';
+      case 'controlado': return 'bg-green-100 text-green-800';
+      case 'en observación':    return 'bg-yellow-100 text-yellow-800';
+      case 'crítico':   return 'bg-red-100 text-red-800';
       default:           return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'controlled': return <CheckCircle className="w-4 h-4" />;
-      case 'warning':    return <AlertCircle className="w-4 h-4" />;
-      case 'critical':   return <XCircle className="w-4 h-4" />;
+      case 'controlado': return <CheckCircle className="w-4 h-4" />;
+      case 'en observación':    return <AlertCircle className="w-4 h-4" />;
+      case 'crítico':   return <XCircle className="w-4 h-4" />;
       default:           return null;
     }
   };
 
   const priorityLabel = (p: string) =>
-    p === 'critical' ? 'Crítica' : p === 'high' ? 'Alta' : 'Media';
+    p === 'crítico' ? 'Crítica' : p === 'high' ? 'Alta' : 'Media';
 
   const formatValue = (value: any) => {
     // Si es null o undefined
@@ -373,7 +373,7 @@ useEffect(() => {
                   </div>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(patient.status)}`}>
                     {getStatusIcon(patient.status)}
-                    {patient.status === 'controlled' ? 'Controlado' : patient.status === 'warning' ? 'Observación' : 'Crítico'}
+                    {patient.status === 'controlado' ? 'Controlado' : patient.status === 'en observación' ? 'Observación' : 'Crítico'}
                   </span>
                 </div>
                 <div className="flex gap-4 text-xs text-gray-500">

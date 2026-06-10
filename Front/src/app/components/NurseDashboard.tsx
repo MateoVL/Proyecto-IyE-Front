@@ -343,9 +343,9 @@ export function NurseDashboard() {
   /* HARDCODEADO POR AHORA */
   const handleSendWhatsApp = () => {
     if (whatsAppMessage.trim() && whatsAppPatient) {
-      console.log(`Enviando mensaje a ${whatsAppPatient.name} (""): ${whatsAppMessage}`);
+      console.log(`Enviando mensaje a ${whatsAppPatient.name} ("ingresar numero aqui"): ${whatsAppMessage}`);
       try {
-        nurseService.sendWhatsAppMessage("", whatsAppMessage);
+        nurseService.sendWhatsAppMessage("ingresar numero aqui", whatsAppMessage);
         alert('Mensaje enviado correctamente');
       } catch (error) {
         alert('Error al enviar el mensaje');
@@ -357,18 +357,18 @@ export function NurseDashboard() {
   };
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'controlled': return 'bg-green-100 text-green-800';
-      case 'warning': return 'bg-yellow-100 text-yellow-800';
-      case 'critical': return 'bg-red-100 text-red-800';
+      case 'controlado': return 'bg-green-100 text-green-800';
+      case 'en observación': return 'bg-yellow-100 text-yellow-800';
+      case 'crítico': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'controlled': return 'Controlado';
-      case 'warning': return 'En Observación';
-      case 'critical': return 'Crítico';
+      case 'controlado': return 'Controlado';
+      case 'en observación': return 'En Observación';
+      case 'crítico': return 'Crítico';
       default: return 'Normal';
     }
   };
@@ -431,9 +431,9 @@ export function NurseDashboard() {
 
   const stats = {
     total: patients.length,
-    controlled: patients.filter(p => p.status === 'controlled').length,
-    warning: patients.filter(p => p.status === 'warning').length,
-    critical: patients.filter(p => p.status === 'critical').length
+    controlled: patients.filter(p => p.status === 'controlado').length,
+    warning: patients.filter(p => p.status === 'en observación').length,
+    critical: patients.filter(p => p.status === 'crítico').length
   };
 
   return (
@@ -526,9 +526,9 @@ export function NurseDashboard() {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">Todos los estados</option>
-              <option value="controlled">Controlados</option>
-              <option value="warning">En Observación</option>
-              <option value="critical">Críticos</option>
+              <option value="controlado">Controlados</option>
+              <option value="en observación">En Observación</option>
+              <option value="crítico">Críticos</option>
             </select>
           </div>
 
@@ -582,16 +582,18 @@ export function NurseDashboard() {
                       <td className="px-6 py-4">
                         <div className="text-sm">
                           <p className="text-gray-600 mb-1">{patient.alertPattern}</p>
-                          {patient.lastMeasurement && (
+                          {patient.lastMeasurement ? (
                             <div className="flex items-center gap-1 text-gray-500">
                               <Activity className="w-3 h-3" />
                               <span className="text-xs">{patient.lastMeasurement}</span>
                             </div>
+                          ) : (
+                            <span>--</span>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-gray-700">
-                        {new Date(patient.nextVisit).toLocaleDateString('es-ES')}
+                        {patient.nextVisit ? new Date(patient.nextVisit).toLocaleDateString('es-ES') : '--'}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <button
@@ -695,7 +697,7 @@ export function NurseDashboard() {
                   {/* HARDCODEADO POR AHORA */}
                   {whatsAppPatient && (
                     <p className="text-sm text-gray-600 mt-1">
-                      A: {whatsAppPatient.name} ("")
+                      A: {whatsAppPatient.name} ("ingresar numero aqui")
                     </p>
                   )}
                 </div>
