@@ -1,6 +1,7 @@
-import { AlertCircle, TrendingUp, Users, Activity, Bell, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, TrendingUp, Users, Activity, Bell, CheckCircle, XCircle, RefreshCw, FileCheck } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import directorService from '../../services/directorService';
 
 
@@ -66,6 +67,7 @@ type HistoricEntry = {
 };
 
 export function DirectorDashboard() {
+  const navigate = useNavigate();
   // ── Estado local ────────────────────────────────────────────────────────────
   const [filterStatus,   setFilterStatus]   = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
@@ -224,8 +226,16 @@ useEffect(() => {
           <p className="text-gray-600">Seguimiento de Pacientes Crónicos</p>
         </div>
 
-        {/* Botón refresh + estado de carga */}
+        {/* Botones de acción + refresh */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate('/consent')}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors font-medium text-sm shadow-sm"
+          >
+            <FileCheck className="w-4 h-4 text-indigo-600" />
+            <span>Marco Legal & Consentimiento</span>
+          </button>
+
           {error && (
             <span className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg">
               ⚠ {error}

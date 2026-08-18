@@ -1,9 +1,9 @@
 
-import { Search, Users, UserPlus, Filter, Calendar, Clock, MapPin, FileText, Activity } from 'lucide-react';
+import { Search, Users, UserPlus, Filter, Calendar, Clock, MapPin, FileText, Activity, Send, FileCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PatientRecord } from './PatientRecord';
 import nurseService, { ChronicPatient, Patient as MedicalRecordPatient } from '../../services/nurseService';
-import { Send } from "lucide-react";
 
 interface Appointment {
   id: number;
@@ -258,6 +258,7 @@ const upcomingAppointments: Appointment[] = [
 
 
 export function NurseDashboard() {
+  const navigate = useNavigate();
   const [patients, setPatients] = useState<ChronicPatient[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -414,9 +415,18 @@ export function NurseDashboard() {
   return (
     <div className="max-w-[1800px] mx-auto p-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl mb-2">Enfermería</h1>
-        <p className="text-gray-600">Monitoreo y seguimiento de pacientes crónicos</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl mb-2">Enfermería</h1>
+          <p className="text-gray-600">Monitoreo y seguimiento de pacientes crónicos</p>
+        </div>
+        <button
+          onClick={() => navigate('/consent')}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors font-medium text-sm shadow-sm"
+        >
+          <FileCheck className="w-4 h-4 text-indigo-600" />
+          <span>Marco Legal & Consentimiento</span>
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -506,6 +516,15 @@ export function NurseDashboard() {
               <option value="crítico">Críticos</option>
             </select>
           </div>
+
+          {/* Consent Button */}
+          <button
+            onClick={() => navigate('/consent')}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors font-medium text-sm"
+          >
+            <FileCheck className="w-4 h-4 text-indigo-600" />
+            <span>Consentimiento</span>
+          </button>
 
           {/* Add Patient Button */}
           <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
