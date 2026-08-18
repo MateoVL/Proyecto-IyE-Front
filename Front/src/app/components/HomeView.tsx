@@ -7,6 +7,8 @@ import {
   Calendar,
   UserCog,
   Stethoscope,
+  FileCheck,
+  Scale,
 } from "lucide-react";
 
 import { useState } from "react";
@@ -58,16 +60,20 @@ export function HomeView({ onSelectRole }: HomeViewProps) {
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex gap-4 justify-center mb-16">
+          <div className="flex flex-wrap gap-4 justify-center mb-16">
             <button
               onClick={() => setShowRoleModal(true)}
-              className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-lg hover:shadow-xl"
+              className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-lg hover:shadow-xl font-medium"
             >
               Comenzar
             </button>
 
-            <button className="px-8 py-3 bg-white text-blue-500 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition-colors">
-              Más Información
+            <button
+              onClick={() => navigate("/consent")}
+              className="flex items-center gap-2 px-8 py-3 bg-white text-blue-600 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition-colors font-medium shadow-sm"
+            >
+              <FileCheck className="w-5 h-5 text-blue-600" />
+              <span>Marco Legal & Consentimiento</span>
             </button>
           </div>
         </div>
@@ -271,11 +277,22 @@ export function HomeView({ onSelectRole }: HomeViewProps) {
                 </div>
               </div>
 
-              {/* Cancel Button */}
-              <div className="text-center mt-6">
+              {/* Bottom Actions */}
+              <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <button
+                  onClick={() => {
+                    setShowRoleModal(false);
+                    navigate("/consent");
+                  }}
+                  className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+                >
+                  <FileCheck className="w-4 h-4 text-indigo-600" />
+                  <span>Ver Marco Legal de Consentimiento (Leyes 20.584 y 19.628) →</span>
+                </button>
+
                 <button
                   onClick={() => setShowRoleModal(false)}
-                  className="text-gray-500 hover:text-gray-700 text-sm"
+                  className="text-gray-500 hover:text-gray-700 text-sm transition-colors"
                 >
                   Cancelar
                 </button>
