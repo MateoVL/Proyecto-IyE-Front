@@ -11,47 +11,35 @@ interface Notification {
   read: boolean;
 }
 
-
-const initialNotifications: Notification[] = [
-  {
-    id: 1,
-    patientName: 'Ana Rodríguez',
-    status: 'critical',
-    message: 'Paciente Ana Rodríguez está en estado CRÍTICO, se le envió un mensaje por WhatsApp. Debe agendarse un control.',
-    timestamp: 'Hace 5 min',
-    read: false
-  },
-  {
-    id: 2,
-    patientName: 'Juan Pérez Martín',
-    status: 'high',
-    message: 'Paciente Juan Pérez Martín está en estado ALTO, se le envió un mensaje por WhatsApp. Debe agendarse un control.',
-    timestamp: 'Hace 15 min',
-    read: false
-  },
-  {
-    id: 3,
-    patientName: 'María García López',
-    status: 'high',
-    message: 'Paciente María García López está en estado ALTO, se le envió un mensaje por WhatsApp. Debe agendarse un control.',
-    timestamp: 'Hace 30 min',
-    read: false
-  },
-  {
-    id: 4,
-    patientName: 'Francisco Ruiz',
-    status: 'high',
-    message: 'Paciente Francisco Ruiz está en estado ALTO, se le envió un mensaje por WhatsApp. Debe agendarse un control.',
-    timestamp: 'Hace 1 hora',
-    read: true
-  }
-];
+import nurseService, { RecentAlertDto } from '../../services/nurseService';
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const response = await nurseService.getRecentAlerts();
+        const mapped: Notification[] = response.data.map(alert => ({
+          id: alert.id,
+          patientName: alert.patientName,
+          status: alert.type === 'Preventiva' ? 'critical' : 'high',
+          message: alert.description,
+          timestamp: alert.time,
+          read: false
+        }));
+        setNotifications(mapped);
+      } catch (error) {
+        console.error("Failed to fetch alerts", error);
+      }
+    };
+    fetchAlerts();
+    const interval = setInterval(fetchAlerts, 10000); // Polling every 10s
+    return () => clearInterval(interval);
+  }, []);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 

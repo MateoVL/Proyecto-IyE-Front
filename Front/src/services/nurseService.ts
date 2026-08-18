@@ -35,6 +35,15 @@ export interface Appointment {
   priority: string;
 }
 
+export interface RecentAlertDto {
+  id: number;
+  patientName: string;
+  type: string;
+  description: string;
+  time: string;
+  status: string;
+}
+
 export interface Patient {
   idPatient: number;
   name: string;
@@ -85,6 +94,9 @@ export const getMedicalRecord = (idPatient: number) =>
 export const getFutureAppointments = () =>
   httpCommon.get<Appointment[]>(`/v1/control/future/appointments`);
 
+export const getRecentAlerts = () =>
+  httpCommon.get<RecentAlertDto[]>(`/v1/alerta/get/recent/alerts`);
+
 export const sendWhatsAppMessage = (
   numero: string,
   mensaje: string
@@ -100,5 +112,6 @@ export default {
   getPatients,
   getMedicalRecord,
   getFutureAppointments,
+  getRecentAlerts,
   sendWhatsAppMessage
 };
