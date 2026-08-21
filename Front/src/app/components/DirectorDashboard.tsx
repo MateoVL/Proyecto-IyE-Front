@@ -40,10 +40,10 @@ const chronicPatients = [
 
 type Alert = {
   id: number;
-  patient: string;
-  condition: string;
-  alert: string;
-  priority: 'critical' | 'high' | 'medium';
+  patientName: string;
+  type: string;
+  description: string;
+  status: 'critical' | 'high' | 'medium';
   time: string;
 };
 
@@ -153,7 +153,7 @@ useEffect(() => {
   init();
 }, []);
   const filteredAlerts = alerts.filter(alert =>
-    filterPriority === 'all' || alert.priority === filterPriority
+    filterPriority === 'all' || alert.status === filterPriority
   );
 
   const filteredPatients = chronicPatients.filter(patient =>
@@ -339,13 +339,13 @@ useEffect(() => {
               filteredAlerts.map((alert) => (
                 <div key={alert.id} className="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-medium">{formatValue(alert.patient)}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(alert.priority)}`}>
-                      {priorityLabel(alert.priority)}
+                    <h3 className="font-medium">{formatValue(alert.patientName)}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(alert.status)}`}>
+                      {priorityLabel(alert.status)}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-1">{formatValue(alert.condition)}</p>
-                  <p className="text-sm mb-2">{formatValue(alert.alert)}</p>
+                  <p className="text-sm text-gray-600 mb-1">{formatValue(alert.type)}</p>
+                  <p className="text-sm mb-2">{formatValue(alert.description)}</p>
                   <span className="text-xs text-gray-500">{formatValue(alert.time)}</span>
                 </div>
               ))

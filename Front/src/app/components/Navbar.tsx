@@ -1,4 +1,5 @@
 import { Activity, LogOut, LogIn } from 'lucide-react';
+import httpCommon from '../../config/http-common';
 
 interface User {
   name: string;
@@ -15,6 +16,19 @@ interface NavbarProps {
 }
 
 export function Navbar({ isAuthenticated, user, onLogin, onLogout }: NavbarProps) {
+  const handleSimularDemo = async () => {
+    const phone = window.prompt("Ingresa tu número de teléfono (ej: 56912345678):");
+    if (!phone) return;
+
+    try {
+      const response = await httpCommon.post(`/v1/alerta/trigger-demo?phone=${encodeURIComponent(phone)}`);
+      alert(`Demo ejecutada con éxito:\n\n${response.data.reporte}`);
+    } catch (error) {
+      console.error(error);
+      alert("Error al ejecutar la demo (revisa la consola o asegúrate de estar autenticado).");
+    }
+  };
+
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-[1400px] mx-auto px-6 py-4">
@@ -34,6 +48,12 @@ export function Navbar({ isAuthenticated, user, onLogin, onLogout }: NavbarProps
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <>
+                <button
+                  onClick={handleSimularDemo}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold rounded-lg hover:from-purple-600 hover:to-indigo-600 transition-all shadow-lg shadow-indigo-500/30 animate-pulse-slow"
+                >
+                  🚀 Simular Alertas (Demo)
+                </button>
                 {/* User Profile */}
                 <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-lg">
                   <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white">

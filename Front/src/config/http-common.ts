@@ -1,11 +1,24 @@
 import axios from 'axios';
 
+declare global {
+  interface Window {
+    RUNTIME_CONFIG?: {
+      KEYCLOAK_URL?: string;
+      KEYCLOAK_REALM?: string;
+      KEYCLOAK_CLIENT?: string;
+      API_BASE_URL?: string;
+    };
+  }
+}
+
 const ACCESS_KEY  = 'iye_access_token';
 const REFRESH_KEY = 'iye_refresh_token';
 const USER_KEY    = 'iye_user';
 
-const KC_TOKEN_URL = 'http://localhost:8180/realms/iye/protocol/openid-connect/token';
-const KC_CLIENT    = 'iye-frontend';
+const KC_URL = window.RUNTIME_CONFIG?.KEYCLOAK_URL || 'http://localhost:8180';
+const KC_REALM = window.RUNTIME_CONFIG?.KEYCLOAK_REALM || 'iye';
+const KC_TOKEN_URL = `${KC_URL}/realms/${KC_REALM}/protocol/openid-connect/token`;
+const KC_CLIENT = window.RUNTIME_CONFIG?.KEYCLOAK_CLIENT || 'iye-frontend';
 
 /** Refresca el access token si expira en menos de 60 segundos */
 const getValidToken = async (): Promise<string | null> => {
@@ -48,7 +61,7 @@ const getValidToken = async (): Promise<string | null> => {
 };
 
 const httpCommon = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: window.RUNTIME_CONFIG?.API_BASE_URL || 'http://localhost:8080/api',
   headers: { 'Content-Type': 'application/json' },
 });
 

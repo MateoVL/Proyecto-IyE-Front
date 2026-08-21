@@ -3,9 +3,9 @@ import axios from 'axios';
 
 // ─── Constantes de Keycloak ───────────────────────────────────────────────────
 
-const KC_URL    = 'http://localhost:8180';
-const KC_REALM  = 'iye';
-const KC_CLIENT = 'iye-frontend';
+const KC_URL    = window.RUNTIME_CONFIG?.KEYCLOAK_URL || 'http://localhost:8180';
+const KC_REALM  = window.RUNTIME_CONFIG?.KEYCLOAK_REALM || 'iye';
+const KC_CLIENT = window.RUNTIME_CONFIG?.KEYCLOAK_CLIENT || 'iye-frontend';
 
 /** Endpoint de token del realm */
 const TOKEN_URL = `${KC_URL}/realms/${KC_REALM}/protocol/openid-connect/token`;
