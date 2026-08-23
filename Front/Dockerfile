@@ -27,7 +27,12 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copiar los archivos estáticos compilados desde la etapa anterior al directorio de Nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Exponer el puerto 5173
-EXPOSE 5173
+# Script que genera config.js en runtime a partir de env vars del compose.
+# Permite desplegar la misma imagen en distintos entornos sin rebuild.
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
+EXPOSE 80
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
