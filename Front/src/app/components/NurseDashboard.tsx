@@ -422,9 +422,9 @@ export function NurseDashboard() {
         </div>
         <button
           onClick={() => navigate('/consent')}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors font-medium text-sm shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-300 text-slate-900 hover:text-indigo-950 rounded-lg hover:bg-indigo-100 transition-colors font-semibold text-sm shadow-sm"
         >
-          <FileCheck className="w-4 h-4 text-indigo-600" />
+          <FileCheck className="w-4 h-4 text-indigo-800" />
           <span>Marco Legal & Consentimiento</span>
         </button>
       </div>
@@ -520,9 +520,9 @@ export function NurseDashboard() {
           {/* Consent Button */}
           <button
             onClick={() => navigate('/consent')}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors font-medium text-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-300 text-slate-900 hover:text-indigo-950 rounded-lg hover:bg-indigo-100 transition-colors font-semibold text-sm shadow-sm"
           >
-            <FileCheck className="w-4 h-4 text-indigo-600" />
+            <FileCheck className="w-4 h-4 text-indigo-800" />
             <span>Consentimiento</span>
           </button>
 

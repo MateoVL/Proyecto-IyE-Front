@@ -70,9 +70,9 @@ export function HomeView({ onSelectRole }: HomeViewProps) {
 
             <button
               onClick={() => navigate("/consent")}
-              className="flex items-center gap-2 px-8 py-3 bg-white text-blue-600 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition-colors font-medium shadow-sm"
+              className="flex items-center gap-2 px-8 py-3 bg-white text-slate-900 border-2 border-slate-700 hover:border-slate-900 rounded-lg hover:bg-slate-50 transition-colors font-semibold shadow-sm"
             >
-              <FileCheck className="w-5 h-5 text-blue-600" />
+              <FileCheck className="w-5 h-5 text-blue-700" />
               <span>Marco Legal & Consentimiento</span>
             </button>
           </div>
@@ -284,9 +284,9 @@ export function HomeView({ onSelectRole }: HomeViewProps) {
                     setShowRoleModal(false);
                     navigate("/consent");
                   }}
-                  className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+                  className="flex items-center gap-2 text-sm text-slate-900 hover:text-indigo-900 font-semibold transition-colors"
                 >
-                  <FileCheck className="w-4 h-4 text-indigo-600" />
+                  <FileCheck className="w-4 h-4 text-indigo-700" />
                   <span>Ver Marco Legal de Consentimiento (Leyes 20.584 y 19.628) →</span>
                 </button>
 
