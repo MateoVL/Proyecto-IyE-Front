@@ -46,7 +46,7 @@ export default function App() {
         <Routes>
           {/* Públicas */}
           <Route path="/login" element={<LoginView />} />
-          <Route path="/home" element={<HomeView onSelectRole={() => { }} />} />
+          <Route path="/home" element={<HomeView />} />
           <Route path="/consent" element={<ConsentView />} />
 
           {/* Protegidas */}
