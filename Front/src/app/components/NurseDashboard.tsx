@@ -16,246 +16,6 @@ interface Appointment {
   priority: string;
 }
 
-/*
-const mockPatients: Patient[] = [
-  {
-    id: 1,
-    name: 'María García López',
-    age: 68,
-    conditions: ['Diabetes Tipo 2', 'Hipertensión'],
-    email: 'maria.garcia@email.com',
-    phone: '555-0101',
-    address: 'Av. Principal 123, Santiago',
-    bloodType: 'O+',
-    allergies: 'Penicilina',
-    medications: 'Metformina 850mg (2 veces al día), Enalapril 10mg',
-    lastVisit: '2026-05-15',
-    nextVisit: '2026-05-22',
-    status: 'controlled',
-    emergencyContact: 'Pedro García',
-    emergencyPhone: '555-0102',
-    alertPattern: 'Valores estables en rango objetivo',
-    lastMeasurement: '120 mg/dl'
-  },
-  {
-    id: 2,
-    name: 'Juan Pérez Martín',
-    age: 72,
-    conditions: ['Hipertensión'],
-    email: 'juan.perez@email.com',
-    phone: '555-0103',
-    address: 'Calle Los Pinos 456, Providencia',
-    bloodType: 'A+',
-    allergies: 'Ninguna conocida',
-    medications: 'Losartán 50mg, Aspirina 100mg',
-    lastVisit: '2026-05-10',
-    nextVisit: '2026-05-20',
-    status: 'warning',
-    emergencyContact: 'Carmen Pérez',
-    emergencyPhone: '555-0104',
-    alertPattern: 'Presión arterial elevada (3 días consecutivos)',
-    lastMeasurement: '165/95 mmHg'
-  },
-  {
-    id: 3,
-    name: 'Ana Rodríguez',
-    age: 65,
-    conditions: ['EPOC'],
-    email: 'ana.rodriguez@email.com',
-    phone: '555-0105',
-    address: 'Pasaje Las Flores 789, Las Condes',
-    bloodType: 'B-',
-    allergies: 'Sulfamidas',
-    medications: 'Salbutamol inhalador, Prednisona 5mg',
-    lastVisit: '2026-05-18',
-    nextVisit: '2026-05-21',
-    status: 'critical',
-    emergencyContact: 'Roberto Rodríguez',
-    emergencyPhone: '555-0106',
-    alertPattern: 'Saturación O2 < 90% últimas 48h',
-    lastMeasurement: '88% O2'
-  },
-  {
-    id: 4,
-    name: 'Carlos Sánchez',
-    age: 75,
-    conditions: ['Insuficiencia Cardíaca', 'Hipertensión'],
-    email: 'carlos.sanchez@email.com',
-    phone: '555-0107',
-    address: 'Av. Libertador 321, Ñuñoa',
-    bloodType: 'AB+',
-    allergies: 'Ninguna conocida',
-    medications: 'Furosemida 40mg, Carvedilol 25mg, Enalapril 20mg',
-    lastVisit: '2026-05-16',
-    nextVisit: '2026-05-23',
-    status: 'controlled',
-    emergencyContact: 'Isabel Sánchez',
-    emergencyPhone: '555-0108',
-    alertPattern: 'Control estable, peso dentro del rango',
-    lastMeasurement: '75 kg'
-  },
-  {
-    id: 5,
-    name: 'Laura Fernández',
-    age: 58,
-    conditions: ['Diabetes Tipo 1'],
-    email: 'laura.fernandez@email.com',
-    phone: '555-0109',
-    address: 'Calle Nueva 654, Vitacura',
-    bloodType: 'O-',
-    allergies: 'Látex',
-    medications: 'Insulina glargina, Insulina rápida, Metformina',
-    lastVisit: '2026-05-17',
-    nextVisit: '2026-05-24',
-    status: 'controlled',
-    emergencyContact: 'Diego Fernández',
-    emergencyPhone: '555-0110',
-    alertPattern: 'Buen control metabólico',
-    lastMeasurement: '110 mg/dl'
-  },
-  {
-    id: 6,
-    name: 'Pedro Gómez',
-    age: 70,
-    conditions: ['Hipertensión', 'Diabetes Tipo 2'],
-    email: 'pedro.gomez@email.com',
-    phone: '555-0111',
-    address: 'Av. Grecia 987, La Reina',
-    bloodType: 'A-',
-    allergies: 'Yodo',
-    medications: 'Amlodipino 10mg, Hidroclorotiazida 25mg',
-    lastVisit: '2026-05-14',
-    nextVisit: '2026-05-21',
-    status: 'warning',
-    emergencyContact: 'María Gómez',
-    emergencyPhone: '555-0112',
-    alertPattern: 'Valores ligeramente elevados',
-    lastMeasurement: '140/85 mmHg'
-  },
-  {
-    id: 7,
-    name: 'Isabel Torres',
-    age: 63,
-    conditions: ['Diabetes Tipo 2'],
-    email: 'isabel.torres@email.com',
-    phone: '555-0113',
-    address: 'Paseo Central 147, Maipú',
-    bloodType: 'B+',
-    allergies: 'Ninguna conocida',
-    medications: 'Metformina 1000mg, Glibenclamida 5mg',
-    lastVisit: '2026-05-12',
-    nextVisit: '2026-05-25',
-    status: 'controlled',
-    emergencyContact: 'José Torres',
-    emergencyPhone: '555-0114',
-    alertPattern: 'Valores dentro del rango',
-    lastMeasurement: '110 mg/dl'
-  },
-  {
-    id: 8,
-    name: 'Francisco Ruiz',
-    age: 69,
-    conditions: ['Arritmia', 'Hipertensión'],
-    email: 'francisco.ruiz@email.com',
-    phone: '555-0115',
-    address: 'Calle Andes 258, Peñalolén',
-    bloodType: 'O+',
-    allergies: 'AINEs',
-    medications: 'Amiodarona 200mg, Warfarina 5mg',
-    lastVisit: '2026-05-13',
-    nextVisit: '2026-05-19',
-    status: 'warning',
-    emergencyContact: 'Teresa Ruiz',
-    emergencyPhone: '555-0116',
-    alertPattern: 'Frecuencia cardíaca irregular últimas 6h',
-    lastMeasurement: '105 bpm irregular'
-  }
-];
-
-const upcomingAppointments: Appointment[] = [
-  {
-    id: 1,
-    patient: 'Ana Rodríguez',
-    date: '2026-05-21',
-    time: '10:30',
-    type: 'Control Respiratorio',
-    doctor: 'Dr. Martínez',
-    room: '203',
-    priority: 'high'
-  },
-  {
-    id: 2,
-    patient: 'Francisco Ruiz',
-    date: '2026-05-19',
-    time: '14:00',
-    type: 'Electrocardiograma',
-    doctor: 'Dra. López',
-    room: '215',
-    priority: 'high'
-  },
-  {
-    id: 3,
-    patient: 'Juan Pérez Martín',
-    date: '2026-05-20',
-    time: '09:00',
-    type: 'Control de Presión',
-    doctor: 'Dr. García',
-    room: '105',
-    priority: 'medium'
-  },
-  {
-    id: 4,
-    patient: 'Pedro Gómez',
-    date: '2026-05-21',
-    time: '11:00',
-    type: 'Seguimiento General',
-    doctor: 'Dr. Martínez',
-    room: '156',
-    priority: 'low'
-  },
-  {
-    id: 5,
-    patient: 'María García López',
-    date: '2026-05-22',
-    time: '08:30',
-    type: 'Control de Glucosa',
-    doctor: 'Dra. Hernández',
-    room: '310',
-    priority: 'medium'
-  },
-  {
-    id: 6,
-    patient: 'Carlos Sánchez',
-    date: '2026-05-23',
-    time: '10:00',
-    type: 'Control Cardíaco',
-    doctor: 'Dr. Martínez',
-    room: '208',
-    priority: 'medium'
-  },
-  {
-    id: 7,
-    patient: 'Laura Fernández',
-    date: '2026-05-24',
-    time: '15:30',
-    type: 'Ajuste de Insulina',
-    doctor: 'Dra. Hernández',
-    room: '402',
-    priority: 'low'
-  },
-  {
-    id: 8,
-    patient: 'Isabel Torres',
-    date: '2026-05-25',
-    time: '09:30',
-    type: 'Control de Glucosa',
-    doctor: 'Dra. Hernández',
-    room: '301',
-    priority: 'low'
-  }
-];
-*/
-
 
 export function NurseDashboard() {
   const navigate = useNavigate();
@@ -445,8 +205,8 @@ export function NurseDashboard() {
           </div>
         </div>
         <div
-          onClick={() => setFilterStatus('controlled')}
-          className={`bg-green-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'controlled' ? 'border-green-500 ring-2 ring-green-200' : 'border-green-200'
+          onClick={() => setFilterStatus('controlado')}
+          className={`bg-green-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'controlado' ? 'border-green-500 ring-2 ring-green-200' : 'border-green-200'
             }`}
         >
           <div className="flex items-center justify-between">
@@ -458,8 +218,8 @@ export function NurseDashboard() {
           </div>
         </div>
         <div
-          onClick={() => setFilterStatus('warning')}
-          className={`bg-yellow-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'warning' ? 'border-yellow-500 ring-2 ring-yellow-200' : 'border-yellow-200'
+          onClick={() => setFilterStatus('en observación')}
+          className={`bg-yellow-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'en observación' ? 'border-yellow-500 ring-2 ring-yellow-200' : 'border-yellow-200'
             }`}
         >
           <div className="flex items-center justify-between">
@@ -471,8 +231,8 @@ export function NurseDashboard() {
           </div>
         </div>
         <div
-          onClick={() => setFilterStatus('critical')}
-          className={`bg-red-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'critical' ? 'border-red-500 ring-2 ring-red-200' : 'border-red-200'
+          onClick={() => setFilterStatus('crítico')}
+          className={`bg-red-50 rounded-lg shadow-sm p-6 border-2 cursor-pointer transition-all hover:shadow-lg ${filterStatus === 'crítico' ? 'border-red-500 ring-2 ring-red-200' : 'border-red-200'
             }`}
         >
           <div className="flex items-center justify-between">
