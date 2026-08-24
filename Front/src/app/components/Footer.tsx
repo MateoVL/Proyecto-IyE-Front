@@ -1,4 +1,4 @@
-import { Activity, Mail, Phone, MapPin, Heart } from 'lucide-react';
+import { Activity, Mail, Phone, MapPin, Heart, Lock } from 'lucide-react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -71,6 +71,10 @@ export function Footer() {
         <div className="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-400 text-sm">
             © {currentYear} Centro Médico San Rafael. Todos los derechos reservados.
+          </p>
+          <p className="text-gray-400 text-xs flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5 text-blue-400" />
+            Todos los datos están cifrados (AES-256) y no son de acceso público.
           </p>
           <div className="flex items-center gap-2 text-gray-400 text-sm">
             <span>Hecho con</span>

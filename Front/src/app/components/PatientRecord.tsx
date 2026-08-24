@@ -1,5 +1,6 @@
-import { X, User, Phone, Mail, MapPin, Calendar, Heart, Activity, Edit, Trash2, Save } from 'lucide-react';
+import { X, User, Phone, Mail, MapPin, Calendar, Heart, Activity, Edit, Trash2, Save, FileCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Patient as MedicalRecordPatient, Condition } from '../../services/nurseService';
 import { PathologySheet } from './PathologySheet';
 
@@ -12,6 +13,7 @@ interface PatientRecordProps {
 }
 
 export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: PatientRecordProps) {
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [editedPatient, setEditedPatient] = useState<MedicalRecordPatient | null>(patient);
   const [selectedCondition, setSelectedCondition] = useState<Condition | null>(null);
@@ -22,6 +24,17 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
   }, [patient]);
 
   if (!isOpen || !patient) return null;
+
+  const handleOpenConsent = () => {
+    onClose();
+    navigate('/consent', {
+      state: {
+        patient: currentPatient,
+        patientId: currentPatient.idPatient,
+        patientName: currentPatient.name,
+      }
+    });
+  };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -142,6 +155,14 @@ export function PatientRecord({ isOpen, onClose, patient, onUpdate, onDelete }: 
           <div className="flex items-center gap-2">
             {!isEditing ? (
               <>
+                <button
+                  onClick={handleOpenConsent}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold border border-blue-200 transition-colors"
+                  title="Gestionar Consentimiento Informado"
+                >
+                  <FileCheck className="w-4 h-4 text-blue-600" />
+                  <span>Consentimiento</span>
+                </button>
                 <button
                   onClick={handleEdit}
                   className="p-2 hover:bg-blue-100 rounded-lg transition-colors"

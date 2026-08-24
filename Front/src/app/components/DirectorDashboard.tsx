@@ -1,6 +1,7 @@
-import { AlertCircle, TrendingUp, Users, Activity, Bell, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, TrendingUp, Users, Activity, Bell, CheckCircle, XCircle, RefreshCw, FileCheck } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import directorService from '../../services/directorService';
 
 
@@ -39,10 +40,10 @@ const chronicPatients = [
 
 type Alert = {
   id: number;
-  patient: string;
-  condition: string;
-  alert: string;
-  priority: 'critical' | 'high' | 'medium';
+  patientName: string;
+  type: string;
+  description: string;
+  status: 'critical' | 'high' | 'medium';
   time: string;
 };
 
@@ -66,6 +67,7 @@ type HistoricEntry = {
 };
 
 export function DirectorDashboard() {
+  const navigate = useNavigate();
   // ── Estado local ────────────────────────────────────────────────────────────
   const [filterStatus,   setFilterStatus]   = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
@@ -151,7 +153,7 @@ useEffect(() => {
   init();
 }, []);
   const filteredAlerts = alerts.filter(alert =>
-    filterPriority === 'all' || alert.priority === filterPriority
+    filterPriority === 'all' || alert.status === filterPriority
   );
 
   const filteredPatients = chronicPatients.filter(patient =>
@@ -224,8 +226,16 @@ useEffect(() => {
           <p className="text-gray-600">Seguimiento de Pacientes Crónicos</p>
         </div>
 
-        {/* Botón refresh + estado de carga */}
+        {/* Botones de acción + refresh */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate('/consent')}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors font-medium text-sm shadow-sm"
+          >
+            <FileCheck className="w-4 h-4 text-indigo-600" />
+            <span>Marco Legal & Consentimiento</span>
+          </button>
+
           {error && (
             <span className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg">
               ⚠ {error}
@@ -329,13 +339,13 @@ useEffect(() => {
               filteredAlerts.map((alert) => (
                 <div key={alert.id} className="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-medium">{formatValue(alert.patient)}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(alert.priority)}`}>
-                      {priorityLabel(alert.priority)}
+                    <h3 className="font-medium">{formatValue(alert.patientName)}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(alert.status)}`}>
+                      {priorityLabel(alert.status)}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-1">{formatValue(alert.condition)}</p>
-                  <p className="text-sm mb-2">{formatValue(alert.alert)}</p>
+                  <p className="text-sm text-gray-600 mb-1">{formatValue(alert.type)}</p>
+                  <p className="text-sm mb-2">{formatValue(alert.description)}</p>
                   <span className="text-xs text-gray-500">{formatValue(alert.time)}</span>
                 </div>
               ))

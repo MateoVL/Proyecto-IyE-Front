@@ -8,6 +8,7 @@ import { LoginView } from './components/LoginView';
 import { DirectorDashboard } from './components/DirectorDashboard';
 import { NurseDashboard } from './components/NurseDashboard';
 import { ScheduleAppointment } from './components/ScheduleAppointment';
+import { ConsentView } from './components/ConsentView';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useAuth } from '../context/AuthContext';
 
@@ -46,6 +47,7 @@ export default function App() {
           {/* Públicas */}
           <Route path="/login" element={<LoginView />} />
           <Route path="/home" element={<HomeView onSelectRole={() => { }} />} />
+          <Route path="/consent" element={<ConsentView />} />
 
           {/* Protegidas */}
           <Route
