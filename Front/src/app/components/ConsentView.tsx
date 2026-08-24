@@ -142,28 +142,28 @@ function AccordionSection({ sections, accentColor }: { sections: ConsentSection[
                 return (
                     <div
                         key={section.id}
-                        className="border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-sm"
+                        className="border border-gray-300 rounded-lg overflow-hidden transition-shadow hover:shadow-sm"
                     >
                         <button
                             onClick={() => setOpenId(isOpen ? null : section.id)}
-                            className={`w-full flex items-center justify-between px-5 py-4 text-left transition-colors ${isOpen ? `${accentColor} text-white` : 'bg-white hover:bg-gray-50 text-gray-800'
+                            className={`w-full flex items-center justify-between px-5 py-4 text-left transition-colors ${isOpen ? `${accentColor} text-white font-bold` : 'bg-white hover:bg-gray-100 text-slate-900 font-semibold'
                                 }`}
                         >
                             <div className="flex items-center gap-3">
-                                <span className={isOpen ? 'text-white' : 'text-current opacity-70'}>
+                                <span className={isOpen ? 'text-white' : 'text-slate-800'}>
                                     {section.icon}
                                 </span>
-                                <span className="font-medium text-sm">{section.title}</span>
+                                <span className="font-semibold text-sm">{section.title}</span>
                             </div>
                             {isOpen ? (
-                                <ChevronUp className="w-4 h-4 flex-shrink-0" />
+                                <ChevronUp className="w-4 h-4 flex-shrink-0 text-white" />
                             ) : (
-                                <ChevronDown className="w-4 h-4 flex-shrink-0 text-gray-400" />
+                                <ChevronDown className="w-4 h-4 flex-shrink-0 text-slate-600" />
                             )}
                         </button>
                         {isOpen && (
-                            <div className="px-5 py-4 bg-gray-50 border-t border-gray-200">
-                                <p className="text-sm text-gray-700 leading-relaxed">{section.content}</p>
+                            <div className="px-5 py-4 bg-slate-50 border-t border-gray-200">
+                                <p className="text-sm text-slate-900 leading-relaxed font-normal">{section.content}</p>
                             </div>
                         )}
                     </div>
@@ -242,15 +242,15 @@ export function ConsentView() {
     return (
         <div className="max-w-[1200px] mx-auto p-6">
             {/* Header */}
-            <div className="mb-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white">
+            <div className="mb-8 bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl p-8 text-white shadow-md">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-white bg-opacity-20 rounded-xl">
+                        <div className="p-3 bg-white/20 rounded-xl">
                             <Scale className="w-8 h-8 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-semibold text-white mb-1">Marco Legal de Consentimiento</h1>
-                            <p className="text-blue-100 text-sm">
+                            <h1 className="text-3xl font-bold text-white mb-1">Marco Legal de Consentimiento</h1>
+                            <p className="text-white font-medium text-sm">
                                 Información de derechos, deberes y protección de datos personales — CrónicoTrack
                             </p>
                         </div>
@@ -258,14 +258,14 @@ export function ConsentView() {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleGoBack}
-                            className="flex items-center gap-2 px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg transition-colors text-sm"
+                            className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition-colors text-sm"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             <span>Volver</span>
                         </button>
                         <button
                             onClick={handlePrint}
-                            className="flex items-center gap-2 px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg transition-colors text-sm"
+                            className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition-colors text-sm"
                         >
                             <Printer className="w-4 h-4" />
                             <span>Imprimir</span>
@@ -274,62 +274,62 @@ export function ConsentView() {
                 </div>
 
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-white bg-opacity-15 rounded-xl p-4">
-                        <p className="text-xs text-blue-200 uppercase tracking-wide mb-1 font-medium">Ley 20.584</p>
-                        <p className="text-white font-medium text-sm">Derechos y Deberes de las Personas en Salud</p>
-                        <p className="text-blue-200 text-xs mt-1">Publicada D.O. 24 de abril de 2012</p>
+                    <div className="bg-white/20 border border-white/30 rounded-xl p-4">
+                        <p className="text-xs text-white uppercase tracking-wider mb-1 font-bold">Ley 20.584</p>
+                        <p className="text-white font-bold text-sm">Derechos y Deberes de las Personas en Salud</p>
+                        <p className="text-white/90 text-xs mt-1 font-medium">Publicada D.O. 24 de abril de 2012</p>
                     </div>
-                    <div className="bg-white bg-opacity-15 rounded-xl p-4">
-                        <p className="text-xs text-blue-200 uppercase tracking-wide mb-1 font-medium">Ley 19.628</p>
-                        <p className="text-white font-medium text-sm">Protección de la Vida Privada y Datos Personales</p>
-                        <p className="text-blue-200 text-xs mt-1">Modificada por Ley 21.719, D.O. 13 de diciembre de 2024</p>
+                    <div className="bg-white/20 border border-white/30 rounded-xl p-4">
+                        <p className="text-xs text-white uppercase tracking-wider mb-1 font-bold">Ley 19.628</p>
+                        <p className="text-white font-bold text-sm">Protección de la Vida Privada y Datos Personales</p>
+                        <p className="text-white/90 text-xs mt-1 font-medium">Modificada por Ley 21.719, D.O. 13 de diciembre de 2024</p>
                     </div>
                 </div>
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-xl w-fit">
+            <div className="flex gap-1 mb-6 bg-gray-200 p-1.5 rounded-xl w-fit">
                 <button
                     onClick={() => setActiveTab('20584')}
-                    className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === '20584'
-                        ? 'bg-white text-blue-700 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-800'
+                    className={`px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === '20584'
+                        ? 'bg-white text-slate-950 shadow-sm border border-slate-200'
+                        : 'text-slate-700 hover:text-slate-950 font-semibold'
                         }`}
                 >
                     Ley 20.584
                 </button>
                 <button
                     onClick={() => setActiveTab('19628')}
-                    className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === '19628'
-                        ? 'bg-white text-indigo-700 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-800'
+                    className={`px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === '19628'
+                        ? 'bg-white text-slate-950 shadow-sm border border-slate-200'
+                        : 'text-slate-700 hover:text-slate-950 font-semibold'
                         }`}
                 >
                     Ley 19.628
                 </button>
                 <button
                     onClick={() => setActiveTab('form')}
-                    className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'form'
-                        ? 'bg-white text-green-700 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-800'
+                    className={`px-5 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'form'
+                        ? 'bg-white text-slate-950 shadow-sm border border-slate-200'
+                        : 'text-slate-700 hover:text-slate-950 font-semibold'
                         }`}
                 >
                     <span>Formulario de Consentimiento</span>
-                    {allChecked && <span className="w-2 h-2 bg-green-500 rounded-full" />}
+                    {allChecked && <span className="w-2 h-2 bg-green-600 rounded-full" />}
                 </button>
             </div>
 
             {/* Tab: Ley 20.584 */}
             {activeTab === '20584' && (
                 <div className="space-y-6">
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                    <div className="bg-blue-50 border border-blue-300 rounded-xl p-5">
                         <div className="flex items-start gap-3">
-                            <FileText className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                            <FileText className="w-5 h-5 text-blue-800 mt-0.5 flex-shrink-0" />
                             <div>
-                                <h2 className="text-blue-900 font-semibold mb-1 text-base">
+                                <h2 className="text-slate-950 font-bold mb-1 text-base">
                                     Ley N° 20.584 — Regula los Derechos y Deberes que tienen las Personas en Relación con Acciones Vinculadas a su Atención en Salud
                                 </h2>
-                                <p className="text-blue-700 text-sm leading-relaxed">
+                                <p className="text-slate-900 text-sm leading-relaxed font-normal">
                                     Esta ley se aplica a cualquier prestador de salud, sea público o privado, así como a todos los profesionales y trabajadores que atiendan público o se vinculen con el otorgamiento de atenciones de salud. Los pacientes del sistema CrónicoTrack son titulares de todos los derechos aquí descritos.
                                 </p>
                             </div>
@@ -339,9 +339,9 @@ export function ConsentView() {
                     {/* Derechos */}
                     <div>
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="h-6 w-1 bg-blue-500 rounded-full" />
-                            <h3 className="text-gray-800 font-semibold text-lg">Derechos del Paciente</h3>
-                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{ley20584_derechos.length} artículos</span>
+                            <div className="h-6 w-1 bg-blue-600 rounded-full" />
+                            <h3 className="text-slate-900 font-bold text-lg">Derechos del Paciente</h3>
+                            <span className="text-xs text-slate-800 bg-gray-200 font-semibold px-2.5 py-0.5 rounded-full">{ley20584_derechos.length} artículos</span>
                         </div>
                         <AccordionSection sections={ley20584_derechos} accentColor="bg-blue-600" />
                     </div>
@@ -349,21 +349,21 @@ export function ConsentView() {
                     {/* Deberes */}
                     <div>
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="h-6 w-1 bg-orange-400 rounded-full" />
-                            <h3 className="text-gray-800 font-semibold text-lg">Deberes del Paciente</h3>
-                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{ley20584_deberes.length} artículos</span>
+                            <div className="h-6 w-1 bg-orange-500 rounded-full" />
+                            <h3 className="text-slate-900 font-bold text-lg">Deberes del Paciente</h3>
+                            <span className="text-xs text-slate-800 bg-gray-200 font-semibold px-2.5 py-0.5 rounded-full">{ley20584_deberes.length} artículos</span>
                         </div>
                         <AccordionSection sections={ley20584_deberes} accentColor="bg-orange-500" />
                     </div>
 
                     {/* Reclamaciones */}
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+                    <div className="bg-amber-50 border border-amber-300 rounded-xl p-5">
                         <div className="flex items-start gap-3">
-                            <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <AlertTriangle className="w-5 h-5 text-amber-800 mt-0.5 flex-shrink-0" />
                             <div>
-                                <h4 className="text-amber-900 font-semibold mb-1 text-sm">¿Cómo reclamar si se vulneran sus derechos?</h4>
-                                <p className="text-amber-800 text-sm leading-relaxed">
-                                    El paciente puede reclamar directamente ante el establecimiento de salud donde fue atendido. Si no recibe respuesta en un plazo de 15 días hábiles, o si la respuesta no le satisface, puede recurrir a la <strong>Superintendencia de Salud</strong>. En caso de persistir la vulneración, la Superintendencia puede sancionar con multas de hasta 100 UTM. (Título IV, Ley 20.584)
+                                <h4 className="text-amber-950 font-bold mb-1 text-sm">¿Cómo reclamar si se vulneran sus derechos?</h4>
+                                <p className="text-slate-900 text-sm leading-relaxed font-normal">
+                                    El paciente puede reclamar directamente ante el establecimiento de salud donde fue atendido. Si no recibe respuesta en un plazo de 15 días hábiles, o si la respuesta no le satisface, puede recurrir a la <strong className="text-slate-950">Superintendencia de Salud</strong>. En caso de persistir la vulneración, la Superintendencia puede sancionar con multas de hasta 100 UTM. (Título IV, Ley 20.584)
                                 </p>
                             </div>
                         </div>
@@ -374,15 +374,15 @@ export function ConsentView() {
             {/* Tab: Ley 19.628 */}
             {activeTab === '19628' && (
                 <div className="space-y-6">
-                    <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-5">
+                    <div className="bg-indigo-50 border border-indigo-300 rounded-xl p-5">
                         <div className="flex items-start gap-3">
-                            <Lock className="w-5 h-5 text-indigo-600 mt-0.5 flex-shrink-0" />
+                            <Lock className="w-5 h-5 text-indigo-800 mt-0.5 flex-shrink-0" />
                             <div>
-                                <h2 className="text-indigo-900 font-semibold mb-1 text-base">
+                                <h2 className="text-slate-950 font-bold mb-1 text-base">
                                     Ley N° 19.628 — Sobre Protección de la Vida Privada y Datos Personales
                                 </h2>
-                                <p className="text-indigo-700 text-sm leading-relaxed">
-                                    Esta ley regula el tratamiento de datos personales efectuado por organismos públicos o privados. Los datos de salud son considerados <strong>datos sensibles</strong> y están sujetos a un nivel de protección reforzada. CrónicoTrack trata los datos de sus pacientes de conformidad con esta normativa, garantizando su confidencialidad, integridad y uso exclusivamente clínico.
+                                <p className="text-slate-900 text-sm leading-relaxed font-normal">
+                                    Esta ley regula el tratamiento de datos personales efectuado por organismos públicos o privados. Los datos de salud son considerados <strong className="text-slate-950">datos sensibles</strong> y están sujetos a un nivel de protección reforzada. CrónicoTrack trata los datos de sus pacientes de conformidad con esta normativa, garantizando su confidencialidad, integridad y uso exclusivamente clínico.
                                 </p>
                             </div>
                         </div>
@@ -390,18 +390,18 @@ export function ConsentView() {
 
                     <div>
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="h-6 w-1 bg-indigo-500 rounded-full" />
-                            <h3 className="text-gray-800 font-semibold text-lg">Principios y Disposiciones Aplicables</h3>
-                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{ley19628_sections.length} secciones</span>
+                            <div className="h-6 w-1 bg-indigo-600 rounded-full" />
+                            <h3 className="text-slate-900 font-bold text-lg">Principios y Disposiciones Aplicables</h3>
+                            <span className="text-xs text-slate-800 bg-gray-200 font-semibold px-2.5 py-0.5 rounded-full">{ley19628_sections.length} secciones</span>
                         </div>
                         <AccordionSection sections={ley19628_sections} accentColor="bg-indigo-600" />
                     </div>
 
                     {/* Uso de datos en CrónicoTrack */}
-                    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                    <div className="bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm">
                         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-5 py-4 border-b border-gray-200">
-                            <h4 className="text-gray-800 font-semibold text-sm flex items-center gap-2">
-                                <Shield className="w-4 h-4 text-indigo-600" />
+                            <h4 className="text-slate-900 font-bold text-sm flex items-center gap-2">
+                                <Shield className="w-4 h-4 text-indigo-800" />
                                 Uso de Datos Personales en CrónicoTrack
                             </h4>
                         </div>
@@ -415,22 +415,22 @@ export function ConsentView() {
                                     { label: 'Base legal del tratamiento', value: 'Consentimiento informado del titular y cumplimiento de obligaciones legales en materia de salud.' },
                                     { label: 'Derechos ejercibles', value: 'Acceso, rectificación, cancelación y oposición ante el responsable del tratamiento o la Superintendencia de Salud.' }
                                 ].map((item, i) => (
-                                    <div key={i} className="bg-gray-50 rounded-lg p-3">
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{item.label}</p>
-                                        <p className="text-sm text-gray-800 leading-relaxed">{item.value}</p>
+                                    <div key={i} className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                                        <p className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">{item.label}</p>
+                                        <p className="text-sm text-slate-900 font-medium leading-relaxed">{item.value}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-purple-50 border border-purple-200 rounded-xl p-5">
+                    <div className="bg-purple-50 border border-purple-300 rounded-xl p-5">
                         <div className="flex items-start gap-3">
-                            <AlertTriangle className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                            <AlertTriangle className="w-5 h-5 text-purple-800 mt-0.5 flex-shrink-0" />
                             <div>
-                                <h4 className="text-purple-900 font-semibold mb-1 text-sm">Agencia de Protección de Datos Personales</h4>
-                                <p className="text-purple-800 text-sm leading-relaxed">
-                                    La Ley 21.719 (2024) creó la <strong>Agencia de Protección de Datos Personales</strong>, que administra el Registro Nacional de Sanciones y Cumplimiento. Adicionalmente, la <strong>Superintendencia de Salud</strong> fiscaliza a los prestadores de salud respecto al cumplimiento de las disposiciones de protección de datos en el contexto clínico.
+                                <h4 className="text-purple-950 font-bold mb-1 text-sm">Agencia de Protección de Datos Personales</h4>
+                                <p className="text-slate-900 text-sm leading-relaxed font-normal">
+                                    La Ley 21.719 (2024) creó la <strong className="text-slate-950">Agencia de Protección de Datos Personales</strong>, que administra el Registro Nacional de Sanciones y Cumplimiento. Adicionalmente, la <strong className="text-slate-950">Superintendencia de Salud</strong> fiscaliza a los prestadores de salud respecto al cumplimiento de las disposiciones de protección de datos en el contexto clínico.
                                 </p>
                             </div>
                         </div>
@@ -442,19 +442,19 @@ export function ConsentView() {
             {activeTab === 'form' && (
                 <div className="space-y-6">
                     {submitted ? (
-                        <div className="bg-green-50 border border-green-200 rounded-2xl p-10 text-center">
+                        <div className="bg-green-50 border border-green-300 rounded-2xl p-10 text-center">
                             <div className="flex justify-center mb-4">
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                                    <CheckCircle className="w-8 h-8 text-green-600" />
+                                    <CheckCircle className="w-8 h-8 text-green-700" />
                                 </div>
                             </div>
-                            <h2 className="text-2xl font-semibold text-green-800 mb-2">Consentimiento Registrado</h2>
-                            <p className="text-green-700 text-sm mb-6">
-                                El consentimiento de <strong>{patientName}</strong> (RUT: {patientRut}) ha sido registrado exitosamente el {consentDate}.
+                            <h2 className="text-2xl font-bold text-green-950 mb-2">Consentimiento Registrado</h2>
+                            <p className="text-slate-900 text-sm mb-6">
+                                El consentimiento de <strong className="text-slate-950">{patientName}</strong> (RUT: {patientRut}) ha sido registrado exitosamente el {consentDate}.
                             </p>
                             <button
                                 onClick={() => { setSubmitted(false); setPatientName(''); setPatientRut(''); setRepresentanteName(''); setChecks({ informado: false, datos: false, derechos: false, deberes: false, plataforma: false }); }}
-                                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                                className="px-6 py-2 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors text-sm"
                             >
                                 Nuevo Consentimiento
                             </button>
@@ -462,70 +462,70 @@ export function ConsentView() {
                     ) : (
                         <>
                             {/* Intro */}
-                            <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
-                                <p className="text-gray-700 text-sm leading-relaxed">
+                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                                <p className="text-slate-900 text-sm leading-relaxed font-normal">
                                     El presente formulario tiene por objeto documentar el consentimiento informado del paciente o su representante legal respecto al tratamiento de sus datos clínicos en la plataforma CrónicoTrack, de conformidad con la Ley N° 20.584 sobre Derechos y Deberes en Atención de Salud y la Ley N° 19.628 sobre Protección de la Vida Privada. Lea atentamente cada declaración antes de marcarla.
                                 </p>
                             </div>
 
                             {/* Patient Data */}
-                            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                            <div className="bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm">
                                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 border-b border-gray-200">
-                                    <h3 className="text-gray-800 font-semibold text-sm flex items-center gap-2">
-                                        <UserCheck className="w-4 h-4 text-blue-600" />
+                                    <h3 className="text-slate-900 font-bold text-sm flex items-center gap-2">
+                                        <UserCheck className="w-4 h-4 text-blue-700" />
                                         Datos de Identificación
                                     </h3>
                                 </div>
                                 <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Nombre completo del paciente <span className="text-red-500">*</span></label>
+                                        <label className="block text-sm font-bold text-slate-900 mb-1.5">Nombre completo del paciente <span className="text-red-500">*</span></label>
                                         <input
                                             type="text"
                                             value={patientName}
                                             onChange={(e) => setPatientName(e.target.value)}
                                             placeholder="Ej: María García López"
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-slate-900 placeholder:text-gray-400"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">RUT del paciente <span className="text-red-500">*</span></label>
+                                        <label className="block text-sm font-bold text-slate-900 mb-1.5">RUT del paciente <span className="text-red-500">*</span></label>
                                         <input
                                             type="text"
                                             value={patientRut}
                                             onChange={(e) => setPatientRut(e.target.value)}
                                             placeholder="Ej: 12.345.678-9"
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-slate-900 placeholder:text-gray-400"
                                         />
                                     </div>
                                     <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                            Nombre del representante legal <span className="text-gray-400 font-normal">(si aplica)</span>
+                                        <label className="block text-sm font-bold text-slate-900 mb-1.5">
+                                            Nombre del representante legal <span className="text-gray-500 font-normal">(si aplica)</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={representanteName}
                                             onChange={(e) => setRepresentanteName(e.target.value)}
                                             placeholder="Completar solo si el paciente no puede firmar por sí mismo"
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-slate-900 placeholder:text-gray-400"
                                         />
                                     </div>
                                     <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Fecha</label>
-                                        <p className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">{consentDate}</p>
+                                        <label className="block text-sm font-bold text-slate-900 mb-1.5">Fecha</label>
+                                        <p className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-slate-800 font-medium">{consentDate}</p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Consent Checkboxes */}
-                            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                            <div className="bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm">
                                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 border-b border-gray-200">
-                                    <h3 className="text-gray-800 font-semibold text-sm flex items-center gap-2">
-                                        <CheckCircle className="w-4 h-4 text-blue-600" />
+                                    <h3 className="text-slate-900 font-bold text-sm flex items-center gap-2">
+                                        <CheckCircle className="w-4 h-4 text-blue-700" />
                                         Declaraciones de Consentimiento
                                     </h3>
-                                    <p className="text-xs text-gray-600 mt-1">Marque cada declaración para confirmar su comprensión y aceptación.</p>
+                                    <p className="text-xs text-slate-700 mt-1 font-medium">Marque cada declaración para confirmar su comprensión y aceptación.</p>
                                 </div>
-                                <div className="divide-y divide-gray-100">
+                                <div className="divide-y divide-gray-200">
                                     {([
                                         {
                                             key: 'informado' as const,
@@ -561,14 +561,14 @@ export function ConsentView() {
                                         >
                                             <div className="mt-0.5 flex-shrink-0">
                                                 {checks[key] ? (
-                                                    <CheckCircle className="w-5 h-5 text-green-600" />
+                                                    <CheckCircle className="w-5 h-5 text-green-700" />
                                                 ) : (
-                                                    <Circle className="w-5 h-5 text-gray-300" />
+                                                    <Circle className="w-5 h-5 text-gray-400" />
                                                 )}
                                             </div>
                                             <div>
-                                                <p className={`text-sm font-semibold mb-1 ${checks[key] ? 'text-green-800' : 'text-gray-700'}`}>{label}</p>
-                                                <p className="text-sm text-gray-600 leading-relaxed">{text}</p>
+                                                <p className={`text-sm font-bold mb-1 ${checks[key] ? 'text-green-950' : 'text-slate-900'}`}>{label}</p>
+                                                <p className="text-sm text-slate-800 leading-relaxed font-normal">{text}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -576,16 +576,16 @@ export function ConsentView() {
                             </div>
 
                             {/* Progress indicator */}
-                            <div className="bg-white border border-gray-200 rounded-xl p-4">
+                            <div className="bg-white border border-gray-300 rounded-xl p-4 shadow-sm">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm text-gray-600">Declaraciones completadas</span>
-                                    <span className="text-sm font-semibold text-gray-800">
+                                    <span className="text-sm text-slate-700 font-semibold">Declaraciones completadas</span>
+                                    <span className="text-sm font-bold text-slate-950">
                                         {Object.values(checks).filter(Boolean).length} / {Object.values(checks).length}
                                     </span>
                                 </div>
-                                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                                     <div
-                                        className="h-full bg-green-500 rounded-full transition-all duration-500"
+                                        className="h-full bg-green-600 rounded-full transition-all duration-500"
                                         style={{ width: `${(Object.values(checks).filter(Boolean).length / Object.values(checks).length) * 100}%` }}
                                     />
                                 </div>
@@ -593,15 +593,15 @@ export function ConsentView() {
 
                             {/* Submit */}
                             <div className="flex items-center justify-between gap-4 pt-2">
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-slate-700 font-medium">
                                     Al enviar este formulario, el consentimiento quedará registrado en el sistema con la fecha y datos indicados, de conformidad con la legislación chilena vigente.
                                 </p>
                                 <button
                                     onClick={handleSubmit}
                                     disabled={!canSubmit}
-                                    className={`flex-shrink-0 flex items-center gap-2 px-8 py-3 rounded-lg font-medium text-sm transition-all ${canSubmit
+                                    className={`flex-shrink-0 flex items-center gap-2 px-8 py-3 rounded-lg font-bold text-sm transition-all ${canSubmit
                                         ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md'
-                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                         }`}
                                 >
                                     <CheckCircle className="w-4 h-4" />
