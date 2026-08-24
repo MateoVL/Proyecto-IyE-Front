@@ -34,6 +34,7 @@ export function NurseDashboard() {
       setPatients(patientData.data);
       console.log(patientData.data);
       const appointmentData = await nurseService.getFutureAppointments();
+      console.log("citas", appointmentData.data);
       setUpcomingAppointments(appointmentData.data);
     } catch (error) {
       console.log("Error cargando dashboard", error);
@@ -277,20 +278,6 @@ export function NurseDashboard() {
             </select>
           </div>
 
-          {/* Consent Button */}
-          <button
-            onClick={() => navigate('/consent')}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-300 text-slate-900 hover:text-indigo-950 rounded-lg hover:bg-indigo-100 transition-colors font-semibold text-sm shadow-sm"
-          >
-            <FileCheck className="w-4 h-4 text-indigo-800" />
-            <span>Consentimiento</span>
-          </button>
-
-          {/* Add Patient Button */}
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-            <UserPlus className="w-5 h-5" />
-            <span>Nuevo Paciente</span>
-          </button>
         </div>
       </div>
 

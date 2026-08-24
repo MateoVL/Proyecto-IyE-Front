@@ -5,31 +5,13 @@ import {
   TrendingUp,
   BarChart3,
   Calendar,
-  UserCog,
-  Stethoscope,
   FileCheck,
-  Scale,
 } from "lucide-react";
 
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-interface HomeViewProps {
-  onSelectRole: (role: "director" | "nurse") => void;
-}
- 
-export function HomeView({ onSelectRole }: HomeViewProps) {
-  const [showRoleModal, setShowRoleModal] = useState(false);
+
+export function HomeView() {
   const navigate = useNavigate();
-
-  const handleRoleSelection = (role: "director" | "nurse") => {
-      setShowRoleModal(false);
-
-    if (role === "director") {
-      navigate("/director");
-    } else {
-      navigate("/nurse");
-    }
-  };
 
   return (
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center">
@@ -61,13 +43,6 @@ export function HomeView({ onSelectRole }: HomeViewProps) {
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4 justify-center mb-16">
-            <button
-              onClick={() => setShowRoleModal(true)}
-              className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-lg hover:shadow-xl font-medium"
-            >
-              Comenzar
-            </button>
-
             <button
               onClick={() => navigate("/consent")}
               className="flex items-center gap-2 px-8 py-3 bg-white text-slate-900 border-2 border-slate-700 hover:border-slate-900 rounded-lg hover:bg-slate-50 transition-colors font-semibold shadow-sm"
@@ -199,107 +174,6 @@ export function HomeView({ onSelectRole }: HomeViewProps) {
           </div>
         </div>
 
-        {/* Role Selection Modal */}
-        {showRoleModal && (
-          <div
-            className="fixed inset-0 backdrop-blur-sm bg-white bg-opacity-10 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowRoleModal(false)}
-          >
-            <div
-              className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-8 border border-gray-200"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                  Selecciona tu Rol
-                </h2>
-
-                <p className="text-gray-600">
-                  ¿Cómo deseas acceder al sistema?
-                </p>
-              </div>
-
-              {/* Role Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Director Card */}
-                <div
-                  onClick={() => handleRoleSelection("director")}
-                  className="group cursor-pointer bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-8 hover:border-blue-500 hover:shadow-xl transition-all"
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-4 rounded-2xl mb-4 group-hover:scale-110 transition-transform">
-                      <UserCog className="w-12 h-12 text-white" />
-                    </div>
-
-                    <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                      Director Médico
-                    </h3>
-
-                    <p className="text-gray-600 mb-4">
-                      Accede a dashboards ejecutivos, reportes y estadísticas
-                      generales
-                    </p>
-
-                    <div className="mt-auto">
-                      <span className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg group-hover:bg-blue-600 transition-colors">
-                        Acceder como Director →
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Nurse Card */}
-                <div
-                  onClick={() => handleRoleSelection("nurse")}
-                  className="group cursor-pointer bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-8 hover:border-green-500 hover:shadow-xl transition-all"
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-2xl mb-4 group-hover:scale-110 transition-transform">
-                      <Stethoscope className="w-12 h-12 text-white" />
-                    </div>
-
-                    <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                      Enfermero/a
-                    </h3>
-
-                    <p className="text-gray-600 mb-4">
-                      Monitorea pacientes, gestiona alertas y agenda citas
-                      médicas
-                    </p>
-
-                    <div className="mt-auto">
-                      <span className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg group-hover:bg-green-600 transition-colors">
-                        Acceder como Enfermero/a →
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom Actions */}
-              <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <button
-                  onClick={() => {
-                    setShowRoleModal(false);
-                    navigate("/consent");
-                  }}
-                  className="flex items-center gap-2 text-sm text-slate-900 hover:text-indigo-900 font-semibold transition-colors"
-                >
-                  <FileCheck className="w-4 h-4 text-indigo-700" />
-                  <span>Ver Marco Legal de Consentimiento (Leyes 20.584 y 19.628) →</span>
-                </button>
-
-                <button
-                  onClick={() => setShowRoleModal(false)}
-                  className="text-gray-500 hover:text-gray-700 text-sm transition-colors"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

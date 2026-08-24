@@ -1,4 +1,5 @@
 import { Activity, Mail, Phone, MapPin, Heart, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -44,24 +45,9 @@ export function Footer() {
             <h3 className="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
             <ul className="space-y-2 text-gray-300 text-sm">
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  Portal de Pacientes
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  Agendar Hora
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  Resultados de Exámenes
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
+                <Link to="/consent" className="hover:text-blue-400 transition-colors">
                   Políticas de Privacidad
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
