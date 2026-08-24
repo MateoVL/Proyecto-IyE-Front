@@ -34,5 +34,9 @@ Para solicitar la creación de un nuevo flujo o componente complejo, el prompt p
 2.  **Auditoría de Dependencias:** La IA a veces inventa librerías o usa versiones obsoletas. Revisa el `package.json` en los PRs.
 3.  **Actualización de Reglas:** Si la IA asume convenciones incorrectas (ej. prefiere usar Material UI en vez de Radix UI), añade una regla explícita en este archivo prohibiendo ese comportamiento.
 
+## 6. Lecciones Aprendidas y Reglas Específicas (Actualización PEP 2)
+1.  **Gestión de Memoria en Polling:** Al usar `setInterval` (ej. polling cada 10s en `NotificationBell`), el agente SIEMPRE debe implementar el `clearInterval` correspondiente en la función de limpieza (cleanup function) del `useEffect` para evitar *memory leaks*.
+2.  **Manejo de Errores de Red:** No asumas éxito en las llamadas a la API. Toda llamada al backend debe envolverse en bloques `try/catch` o implementaciones equivalentes de manejo de promesas. La UI debe reflejar visualmente los estados de carga (`loading states`) y mostrar notificaciones amigables en caso de error.
+
 ---
 *Nota: Este archivo es la "fuente de la verdad" para el comportamiento agéntico en el Frontend. Manténganlo actualizado con cada iteración.*
