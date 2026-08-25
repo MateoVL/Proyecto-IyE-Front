@@ -107,11 +107,15 @@ export const sendWhatsAppMessage = (
   });
 };
 
+export const updateMedicalRecord = (idPatient: number, data: Patient) =>
+  httpCommon.put<Patient>(`/v1/medical/record/${idPatient}`, data);
+
 
 export default {
   getPatients,
   getMedicalRecord,
   getFutureAppointments,
   getRecentAlerts,
-  sendWhatsAppMessage
+  sendWhatsAppMessage,
+  updateMedicalRecord
 };
