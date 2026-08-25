@@ -16,6 +16,15 @@ interface Appointment {
   priority: string;
 }
 
+type Alert = {
+  id: number;
+  patientId: number;
+  patientName: string;
+  type: string;
+  description: string;
+  status: 'critical' | 'high' | 'medium';
+  time: string;
+};
 
 export function NurseDashboard() {
   const navigate = useNavigate();
@@ -27,6 +36,7 @@ export function NurseDashboard() {
   const [recordLoading, setRecordLoading] = useState(false);
   const [recordError, setRecordError] = useState<string | null>(null);
   const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
 
   const init = async () => {
     try {
@@ -36,6 +46,10 @@ export function NurseDashboard() {
       const appointmentData = await nurseService.getFutureAppointments();
       console.log("citas", appointmentData.data);
       setUpcomingAppointments(appointmentData.data);
+      // alertas
+      const alertsResponse = await nurseService.getRecentAlerts();
+      setAlerts(alertsResponse.data);
+      console.log("Alertas cargadas:", alertsResponse.data);
     } catch (error) {
       console.log("Error cargando dashboard", error);
     }
@@ -99,6 +113,11 @@ export function NurseDashboard() {
       case 'crítico': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const getPatientAlertDescription = (patientId: number) => {
+    const alert = alerts.find((a) => a.patientId === patientId);
+    return alert?.description ?? '---';
   };
 
   const getStatusLabel = (status: string) => {
@@ -292,9 +311,9 @@ export function NurseDashboard() {
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nombre</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Edad</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Condición</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Estado</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Patrón/Alerta</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Razón de Estado</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Última Visita</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Próxima Visita</th>
                   </tr>
                 </thead>
@@ -309,28 +328,18 @@ export function NurseDashboard() {
                         <p className="font-medium text-blue-600 hover:text-blue-700">{patient.name}</p>
                       </td>
                       <td className="px-6 py-4 text-gray-700">{patient.age} años</td>
-                      <td className="px-6 py-4 text-gray-700">
-                        {Array.isArray(patient.condition)
-                          ? patient.condition.join(', ')
-                          : 'Sin condiciones'}
-                      </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(patient.status)}`}>
                           {getStatusLabel(patient.status)}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm">
-                          <p className="text-gray-600 mb-1">{patient.alertPattern}</p>
-                          {patient.lastMeasurement ? (
-                            <div className="flex items-center gap-1 text-gray-500">
-                              <Activity className="w-3 h-3" />
-                              <span className="text-xs">{patient.lastMeasurement}</span>
-                            </div>
-                          ) : (
-                            <span>--</span>
-                          )}
-                        </div>
+                        <span className="text-sm text-gray-700">
+                          {getPatientAlertDescription(patient.id)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {patient.lastVisit ? new Date(patient.lastVisit).toLocaleDateString('es-ES') : '--'}
                       </td>
                       <td className="px-6 py-4 text-gray-700">
                         {patient.nextVisit ? new Date(patient.nextVisit).toLocaleDateString('es-ES') : '--'}
