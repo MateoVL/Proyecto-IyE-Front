@@ -69,7 +69,7 @@ type HistoricEntry = {
 export function DirectorDashboard() {
   const navigate = useNavigate();
   // ── Estado local ────────────────────────────────────────────────────────────
-  const [filterStatus,   setFilterStatus]   = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
 
 
@@ -77,81 +77,81 @@ export function DirectorDashboard() {
   const [metricsData, setMetricsData] = useState(initialMetricsData);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [chronicPatients, setChronicPatients] = useState<ChronicPatient[]>([]);
-  const [loading,        setLoading]        = useState(true);
-  const [error,          setError]          = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const init = async () => {
-  try {
-    // gráfico
-    const historicResponse = await directorService.getHistoric();
-    setChartData(historicResponse.data);
+    try {
+      // gráfico
+      const historicResponse = await directorService.getHistoric();
+      setChartData(historicResponse.data);
 
-    // alertas
-    const alertsResponse = await directorService.getRecentAlerts();
-    setAlerts(alertsResponse.data);
-    console.log("Alertas cargadas:", alertsResponse.data);
+      // alertas
+      const alertsResponse = await directorService.getRecentAlerts();
+      setAlerts(alertsResponse.data);
+      console.log("Alertas cargadas:", alertsResponse.data);
 
-    // pacientes crónicos
-    const chronicResponse = await directorService.getPatients();
-    setChronicPatients(chronicResponse.data);
+      // pacientes crónicos
+      const chronicResponse = await directorService.getPatients();
+      setChronicPatients(chronicResponse.data);
 
-    // métricas
-    const [
-      chronicPatients,
-      activeAlerts,
-      todayFollowups,
-      controlRate
-    ] = await Promise.all([
-      directorService.getAllPatientsQuantity(),
-      directorService.getActiveAlertsQuantity(),
-      directorService.getFollowUpQuantity(),
-      directorService.getControlRate()
-    ]);
+      // métricas
+      const [
+        chronicPatients,
+        activeAlerts,
+        todayFollowups,
+        controlRate
+      ] = await Promise.all([
+        directorService.getAllPatientsQuantity(),
+        directorService.getActiveAlertsQuantity(),
+        directorService.getFollowUpQuantity(),
+        directorService.getControlRate()
+      ]);
 
 
-    setMetricsData((prev) =>
-      prev.map((metric) => {
-        switch (metric.id) {
-          case 1:
-            return {
-              ...metric,
-              value: chronicPatients.data.quantity.toString()
-            };
+      setMetricsData((prev) =>
+        prev.map((metric) => {
+          switch (metric.id) {
+            case 1:
+              return {
+                ...metric,
+                value: chronicPatients.data.quantity.toString()
+              };
 
-          case 2:
-            return {
-              ...metric,
-              value: activeAlerts.data.quantity.toString()
-            };
+            case 2:
+              return {
+                ...metric,
+                value: activeAlerts.data.quantity.toString()
+              };
 
-          case 3:
-            return {
-              ...metric,
-              value: todayFollowups.data.quantity.toString()
-            };
+            case 3:
+              return {
+                ...metric,
+                value: todayFollowups.data.quantity.toString()
+              };
 
-          case 4:
-            return {
-              ...metric,
-              value: `${Number(controlRate.data.controlRate) * 100}%`
-            };
+            case 4:
+              return {
+                ...metric,
+                value: `${Number(controlRate.data.controlRate) * 100}%`
+              };
 
-          default:
-            return metric;
-        }
-      })
-    );
+            default:
+              return metric;
+          }
+        })
+      );
 
-  } catch (error) {
-    console.log("Error cargando dashboard", error);
-  }finally {
-  setLoading(false);
-}
-};
+    } catch (error) {
+      console.log("Error cargando dashboard", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-useEffect(() => {
-  init();
-}, []);
+  useEffect(() => {
+    init();
+  }, []);
   const filteredAlerts = alerts.filter(alert =>
     filterPriority === 'all' || alert.status === filterPriority
   );
@@ -163,27 +163,27 @@ useEffect(() => {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'critical': return 'bg-red-100 text-red-800 border-red-300';
-      case 'high':     return 'bg-orange-100 text-orange-800 border-orange-300';
-      case 'medium':   return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      default:         return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'high': return 'bg-orange-100 text-orange-800 border-orange-300';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      default: return 'bg-gray-100 text-gray-800 border-gray-300';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'controlado': return 'bg-green-100 text-green-800';
-      case 'en observación':    return 'bg-yellow-100 text-yellow-800';
-      case 'crítico':   return 'bg-red-100 text-red-800';
-      default:           return 'bg-gray-100 text-gray-800';
+      case 'en observación': return 'bg-yellow-100 text-yellow-800';
+      case 'crítico': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'controlado': return <CheckCircle className="w-4 h-4" />;
-      case 'en observación':    return <AlertCircle className="w-4 h-4" />;
-      case 'crítico':   return <XCircle className="w-4 h-4" />;
-      default:           return null;
+      case 'en observación': return <AlertCircle className="w-4 h-4" />;
+      case 'crítico': return <XCircle className="w-4 h-4" />;
+      default: return null;
     }
   };
 
@@ -230,9 +230,9 @@ useEffect(() => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/consent')}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors font-medium text-sm shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-300 text-slate-900 hover:text-indigo-950 rounded-lg hover:bg-indigo-100 transition-colors font-semibold text-sm shadow-sm"
           >
-            <FileCheck className="w-4 h-4 text-indigo-600" />
+            <FileCheck className="w-4 h-4 text-indigo-800" />
             <span>Marco Legal & Consentimiento</span>
           </button>
 
@@ -324,9 +324,9 @@ useEffect(() => {
                 onChange={(e) => setFilterPriority(e.target.value)}
               >
                 <option value="all">Todas</option>
-                <option value="critical">Críticos</option>
-                <option value="high">En Observación</option>
-                <option value="medium">Controlados</option>
+                <option value="critical">Crítica</option>
+                <option value="high">Alta</option>
+                <option value="medium">Media</option>
               </select>
             </div>
           </div>
@@ -367,9 +367,9 @@ useEffect(() => {
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
                 <option value="all">Todos</option>
-                <option value="controlled">Controlados</option>
-                <option value="warning">En Observación</option>
-                <option value="critical">Críticos</option>
+                <option value="controlado">Controlados</option>
+                <option value="en observación">En Observación</option>
+                <option value="crítico">Críticos</option>
               </select>
             </div>
           </div>
