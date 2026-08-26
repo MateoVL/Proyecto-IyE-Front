@@ -82,6 +82,15 @@ export interface Indicator {
   state: string;
 }
 
+export interface Alert {
+  id: number;
+  paciente: Patient;
+  tipo: string;
+  descripcion: string;
+  fecha: string;
+  resuelta: boolean;
+}
+
 // ── Endpoints ─────────────────────────────────────────────────────────────────
 
 
@@ -96,6 +105,9 @@ export const getFutureAppointments = () =>
 
 export const getRecentAlerts = () =>
   httpCommon.get<RecentAlertDto[]>(`/v1/alerta/get/recent/alerts`);
+
+export const getAlerts = () =>
+  httpCommon.get<Alert[]>(`/v1/alerta/get/alerts`);
 
 export const sendWhatsAppMessage = (
   numero: string,
@@ -113,5 +125,6 @@ export default {
   getMedicalRecord,
   getFutureAppointments,
   getRecentAlerts,
-  sendWhatsAppMessage
+  sendWhatsAppMessage,
+  getAlerts
 };

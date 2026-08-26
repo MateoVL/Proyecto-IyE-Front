@@ -47,7 +47,7 @@ export function NurseDashboard() {
       console.log("citas", appointmentData.data);
       setUpcomingAppointments(appointmentData.data);
       // alertas
-      const alertsResponse = await nurseService.getRecentAlerts();
+      const alertsResponse = await nurseService.getAlerts();
       setAlerts(alertsResponse.data);
       console.log("Alertas cargadas:", alertsResponse.data);
     } catch (error) {
