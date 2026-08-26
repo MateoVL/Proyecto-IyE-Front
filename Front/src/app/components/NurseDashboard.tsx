@@ -106,6 +106,17 @@ export function NurseDashboard() {
     }
   };
 
+  const handleUpdatePatient = async (updatedPatient: MedicalRecordPatient) => {
+    try {
+      await nurseService.updateMedicalRecord(updatedPatient.idPatient, updatedPatient);
+      // Reload the data
+      await init();
+      setSelectedMedicalRecord(updatedPatient);
+    } catch (error) {
+      console.error('Error actualizando el registro médico:', error);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'controlado': return 'bg-green-100 text-green-800';
@@ -417,6 +428,7 @@ export function NurseDashboard() {
         isOpen={isRecordOpen}
         onClose={() => setIsRecordOpen(false)}
         patient={selectedMedicalRecord}
+        onUpdate={handleUpdatePatient}
       />
     </div >
   );
